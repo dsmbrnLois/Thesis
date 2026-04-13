@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------------------
+# Orderer Organization (The Consensus Cluster)
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  - Name: OrdererOrg
+    Domain: traceability.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer
+      # This generates: orderer.traceability.com
+
+# ---------------------------------------------------------------------------
+# Peer Organizations (Your 3 Consortium Members)
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  # Organization 1: Farmers / Producers
+  - Name: FarmerOrg
+    Domain: farmer.traceability.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # Generates peer0.farmer.traceability.com (P1)
+    Users:
+      Count: 1 # Generates Admin@farmer.traceability.com and User1
+
+  # Organization 2: Veterinarians
+  - Name: VetOrg
+    Domain: vet.traceability.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # Generates peer0.vet.traceability.com (P2)
+    Users:
+      Count: 1
+
+  # Organization 3: Regulatory / CVO
+  - Name: RegulatorOrg
+    Domain: regulator.traceability.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1 # Generates peer0.regulator.traceability.com (P3)
+    Users:
+      Count: 1

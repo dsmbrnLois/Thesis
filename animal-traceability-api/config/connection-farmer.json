@@ -1,0 +1,86 @@
+{
+  "name": "traceability-network-farmer",
+  "version": "1.0.0",
+  "client": {
+    "organization": "FarmerMSP",
+    "connection": {
+      "timeout": {
+        "peer": {
+          "endorser": "300"
+        },
+        "orderer": "300"
+      }
+    }
+  },
+  "organizations": {
+    "FarmerMSP": {
+      "mspid": "FarmerMSP",
+      "peers": ["peer0.farmer.traceability.com"],
+      "certificateAuthorities": ["ca.farmer.traceability.com"]
+    },
+    "VetMSP": {
+      "mspid": "VetMSP",
+      "peers": ["peer0.vet.traceability.com"]
+    },
+    "RegulatorOrg": {
+      "mspid": "RegulatorMSP",
+      "peers": ["peer0.regulator.traceability.com"]
+    }
+  },
+  "orderers": {
+    "orderer.traceability.com": {
+      "url": "grpcs://localhost:7050",
+      "tlsCACerts": {
+        "path": "../animal-traceability-network/organizations/ordererOrganizations/traceability.com/tlsca/tlsca.traceability.com-cert.pem"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "orderer.traceability.com",
+        "hostnameOverride": "orderer.traceability.com"
+      }
+    }
+  },
+  "peers": {
+    "peer0.farmer.traceability.com": {
+      "url": "grpcs://localhost:7051",
+      "tlsCACerts": {
+        "path": "../animal-traceability-network/organizations/peerOrganizations/farmer.traceability.com/tlsca/tlsca.farmer.traceability.com-cert.pem"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.farmer.traceability.com",
+        "hostnameOverride": "peer0.farmer.traceability.com"
+      }
+    },
+    "peer0.vet.traceability.com": {
+      "url": "grpcs://localhost:9051",
+      "tlsCACerts": {
+        "path": "../animal-traceability-network/organizations/peerOrganizations/vet.traceability.com/tlsca/tlsca.vet.traceability.com-cert.pem"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.vet.traceability.com",
+        "hostnameOverride": "peer0.vet.traceability.com"
+      }
+    },
+    "peer0.regulator.traceability.com": {
+      "url": "grpcs://localhost:11051",
+      "tlsCACerts": {
+        "path": "../animal-traceability-network/organizations/peerOrganizations/regulator.traceability.com/tlsca/tlsca.regulator.traceability.com-cert.pem"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.regulator.traceability.com",
+        "hostnameOverride": "peer0.regulator.traceability.com"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.farmer.traceability.com": {
+      "url": "https://localhost:7054",
+      "caName": "ca-farmer",
+      "tlsCACerts": {
+        "path": "../animal-traceability-network/organizations/peerOrganizations/farmer.traceability.com/ca/ca.farmer.traceability.com-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
+}

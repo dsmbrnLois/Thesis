@@ -1,0 +1,44 @@
+# ==========================================
+# 1. OS & IDE Generated Files
+# ==========================================
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+.vscode/
+.idea/
+
+# ==========================================
+# 2. Node.js & React Frontend/API
+# ==========================================
+node_modules/
+dist/
+build/
+npm-debug.log
+.env
+.env.local
+
+# ==========================================
+# 3. Machine Learning & Python
+# ==========================================
+*.pkl
+__pycache__/
+venv/
+env/
+*.pyc
+
+# ==========================================
+# 4. User Generated Content (PDFs)
+# ==========================================
+*.pdf
+/public/uploads/
+/downloads/
+
+# ==========================================
+# 5. Hyperledger Fabric
+# ==========================================
+fabric-samples/
+bin/
+wallet/
+
+# Ignore Go Chaincode Dependencies
+vendor/

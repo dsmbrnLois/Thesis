@@ -1,0 +1,13 @@
+#root {
+  max-width: none;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+:root {
+  --green: #15803D;
+  --light-green: #86EFAC;
+  --gray: #D1D5DB;
+  --white: #FFFFFF;
+}

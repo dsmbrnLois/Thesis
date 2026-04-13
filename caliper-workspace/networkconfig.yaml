@@ -1,0 +1,23 @@
+name: AnimalTraceabilityNetwork
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: traceability-channel
+    contracts:
+      - id: animal-traceability
+
+organizations:
+  - mspid: FarmerMSP
+    identities:
+      certificates:
+        - name: 'FarmerAdmin'
+          clientPrivateKey:
+            path: '/home/lois/Thesis/animal-traceability-network/organizations/peerOrganizations/farmer.traceability.com/users/Admin@farmer.traceability.com/msp/keystore/priv_sk'
+          clientSignedCert:
+            path: '/home/lois/Thesis/animal-traceability-network/organizations/peerOrganizations/farmer.traceability.com/users/Admin@farmer.traceability.com/msp/signcerts/Admin@farmer.traceability.com-cert.pem'
+    connectionProfile:
+      path: '/home/lois/Thesis/animal-traceability-api/config/connection-farmer.json'
+      discover: true

@@ -1,0 +1,5 @@
+node_modules/
+.env
+wallet/
+venv/
+__pycache__/

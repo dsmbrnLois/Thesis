@@ -1,0 +1,299 @@
+version: "2.4"
+
+volumes:
+  orderer.traceability.com:
+  peer0.farmer.traceability.com:
+  peer0.vet.traceability.com:
+  peer0.regulator.traceability.com:
+
+networks:
+  traceability:
+    name: traceability_net
+
+services:
+  # ====================================================
+  # ORDERING SERVICE (Raft)
+  # ====================================================
+  orderer.traceability.com:
+    container_name: orderer.traceability.com
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.traceability.com:9443
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+      - ./system-genesis-block/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./organizations/ordererOrganizations/traceability.com/orderers/orderer.traceability.com/msp:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/traceability.com/orderers/orderer.traceability.com/tls/:/var/hyperledger/orderer/tls
+      - orderer.traceability.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+    networks:
+      - traceability
+
+  # ====================================================
+  # ORGANIZATION 1: FARMER (Peer + CouchDB + CA)
+  # ====================================================
+  couchdb0:
+    container_name: couchdb0
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 5984:5984
+    networks:
+      - traceability
+
+  ca_farmer:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_farmer
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-farmer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.farmer.traceability.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
+    volumes:
+      - ./organizations/peerOrganizations/farmer.traceability.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - traceability
+
+  peer0.farmer.traceability.com:
+    container_name: peer0.farmer.traceability.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:2.5
+      - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:2.5
+      - CORE_CHAINCODE_EXTERNALBUILDERS=[]
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=traceability_net
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_ID=peer0.farmer.traceability.com
+      - CORE_PEER_ADDRESS=peer0.farmer.traceability.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.farmer.traceability.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.farmer.traceability.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.farmer.traceability.com:7051
+      - CORE_PEER_LOCALMSPID=FarmerMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./organizations/peerOrganizations/farmer.traceability.com/peers/peer0.farmer.traceability.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/farmer.traceability.com/peers/peer0.farmer.traceability.com/tls/:/etc/hyperledger/fabric/tls
+      - peer0.farmer.traceability.com:/var/hyperledger/production
+      - ./:/opt/gopath/src/github.com/hyperledger/fabric/peer
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7051:7051
+    depends_on:
+      - couchdb0
+    networks:
+      - traceability
+
+  # ====================================================
+  # ORGANIZATION 2: VET (Peer + CouchDB + CA)
+  # ====================================================
+  couchdb1:
+    container_name: couchdb1
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 7984:5984
+    networks:
+      - traceability
+
+  ca_vet:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_vet
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-vet
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=8054
+    ports:
+      - 8054:8054
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.vet.traceability.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
+    volumes:
+      - ./organizations/peerOrganizations/vet.traceability.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - traceability
+
+  peer0.vet.traceability.com:
+    container_name: peer0.vet.traceability.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:2.5
+      - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:2.5
+      - CORE_CHAINCODE_EXTERNALBUILDERS=[]
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=traceability_net
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_ID=peer0.vet.traceability.com
+      - CORE_PEER_ADDRESS=peer0.vet.traceability.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.vet.traceability.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.vet.traceability.com:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.vet.traceability.com:9051
+      - CORE_PEER_LOCALMSPID=VetMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./organizations/peerOrganizations/vet.traceability.com/peers/peer0.vet.traceability.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/vet.traceability.com/peers/peer0.vet.traceability.com/tls/:/etc/hyperledger/fabric/tls
+      - peer0.vet.traceability.com:/var/hyperledger/production
+      - ./:/opt/gopath/src/github.com/hyperledger/fabric/peer
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9051:9051
+    depends_on:
+      - couchdb1
+    networks:
+      - traceability
+
+  # ====================================================
+  # ORGANIZATION 3: REGULATOR (Peer + CouchDB + CA)
+  # ====================================================
+  couchdb2:
+    container_name: couchdb2
+    image: couchdb:3.1.1
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    ports:
+      - 9984:5984
+    networks:
+      - traceability
+
+  ca_regulator:
+    image: hyperledger/fabric-ca:1.5
+    container_name: ca_regulator
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-regulator
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_PORT=9054
+    ports:
+      - 9054:9054
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.regulator.traceability.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/priv_sk -b admin:adminpw -d'
+    volumes:
+      - ./organizations/peerOrganizations/regulator.traceability.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - traceability
+
+  peer0.regulator.traceability.com:
+    container_name: peer0.regulator.traceability.com
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_CHAINCODE_BUILDER=hyperledger/fabric-ccenv:2.5
+      - CORE_CHAINCODE_GOLANG_RUNTIME=hyperledger/fabric-baseos:2.5
+      - CORE_CHAINCODE_EXTERNALBUILDERS=[]
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=traceability_net
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_ID=peer0.regulator.traceability.com
+      - CORE_PEER_ADDRESS=peer0.regulator.traceability.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.regulator.traceability.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.regulator.traceability.com:11051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.regulator.traceability.com:11051
+      - CORE_PEER_LOCALMSPID=RegulatorMSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./organizations/peerOrganizations/regulator.traceability.com/peers/peer0.regulator.traceability.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/regulator.traceability.com/peers/peer0.regulator.traceability.com/tls/:/etc/hyperledger/fabric/tls
+      - peer0.regulator.traceability.com:/var/hyperledger/production
+      - ./:/opt/gopath/src/github.com/hyperledger/fabric/peer
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 11051:11051
+    depends_on:
+      - couchdb2
+    networks:
+      - traceability
+
+  # ====================================================
+  # CLI TOOL (For running commands)
+  # ====================================================
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:2.5
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.farmer.traceability.com:7051
+      - CORE_PEER_LOCALMSPID=FarmerMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/farmer.traceability.com/users/Admin@farmer.traceability.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./:/opt/gopath/src/github.com/hyperledger/fabric/peer
+    networks:
+      - traceability
+    depends_on:
+      - orderer.traceability.com
+      - peer0.farmer.traceability.com
+      - peer0.vet.traceability.com
+      - peer0.regulator.traceability.com

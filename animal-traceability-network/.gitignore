@@ -1,0 +1,27 @@
+# --- Dependencies & Binaries ---
+fabric-samples/
+*.zip
+*.tar
+*.gz
+# --- Generated Crypto & Blocks ---
+# We keep the folders, but ignore the specific files inside
+organizations/
+system-genesis-block/*.block
+channel-artifacts/*.block
+channel-artifacts/*.tx
+
+# --- Temporary Config Artifacts (From scripts/manual steps) ---
+*.pb
+*.json
+*.block
+
+# Exceptions (Do NOT ignore these JSON/YAML files)
+!package.json
+!configtx.yaml
+!crypto-config.yaml
+!docker-compose.yaml
+
+# --- IDES & System Files ---
+.DS_Store
+.vscode/
+.idea/

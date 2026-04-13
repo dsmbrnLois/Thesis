@@ -1,0 +1,24 @@
+test:
+  name: AnimalTraceability-Benchmark
+  description: Benchmarking the RegisterAnimal function for thesis Table 1.2
+  workers:
+    number: 1
+  rounds:
+    - label: RegisterAnimal-Warmup
+      description: 50 assets at 10 TPS
+      txNumber: 50
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 10
+      workload:
+        module: workload.js
+    - label: RegisterAnimal-Stress
+      description: 100 assets at 20 TPS
+      txNumber: 100
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 20
+      workload:
+        module: workload.js

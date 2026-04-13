@@ -1,0 +1,115 @@
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: organizations/ordererOrganizations/traceability.com/msp
+        Policies:
+            Readers: { Type: Signature, Rule: "OR('OrdererMSP.member')" }
+            Writers: { Type: Signature, Rule: "OR('OrdererMSP.member')" }
+            Admins:  { Type: Signature, Rule: "OR('OrdererMSP.admin')" }
+        OrdererEndpoints:
+            - orderer.traceability.com:7050
+
+    - &FarmerOrg
+        Name: FarmerOrg
+        ID: FarmerMSP
+        MSPDir: organizations/peerOrganizations/farmer.traceability.com/msp
+        Policies:
+            Readers: { Type: Signature, Rule: "OR('FarmerMSP.admin', 'FarmerMSP.peer', 'FarmerMSP.client')" }
+            Writers: { Type: Signature, Rule: "OR('FarmerMSP.admin', 'FarmerMSP.client')" }
+            Admins:  { Type: Signature, Rule: "OR('FarmerMSP.admin')" }
+            Endorsement: { Type: Signature, Rule: "OR('FarmerMSP.peer')" }
+
+    - &VetOrg
+        Name: VetOrg
+        ID: VetMSP
+        MSPDir: organizations/peerOrganizations/vet.traceability.com/msp
+        Policies:
+            Readers: { Type: Signature, Rule: "OR('VetMSP.admin', 'VetMSP.peer', 'VetMSP.client')" }
+            Writers: { Type: Signature, Rule: "OR('VetMSP.admin', 'VetMSP.client')" }
+            Admins:  { Type: Signature, Rule: "OR('VetMSP.admin')" }
+            Endorsement: { Type: Signature, Rule: "OR('VetMSP.peer')" }
+
+    - &RegulatorOrg
+        Name: RegulatorOrg
+        ID: RegulatorMSP
+        MSPDir: organizations/peerOrganizations/regulator.traceability.com/msp
+        Policies:
+            Readers: { Type: Signature, Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.peer', 'RegulatorMSP.client')" }
+            Writers: { Type: Signature, Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.client')" }
+            Admins:  { Type: Signature, Rule: "OR('RegulatorMSP.admin')" }
+            Endorsement: { Type: Signature, Rule: "OR('RegulatorMSP.peer')" }
+
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers: { Type: ImplicitMeta, Rule: "ANY Readers" }
+        Writers: { Type: ImplicitMeta, Rule: "ANY Writers" }
+        Admins:  { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
+        LifecycleEndorsement: { Type: ImplicitMeta, Rule: "MAJORITY Endorsement" }
+        Endorsement: { Type: ImplicitMeta, Rule: "MAJORITY Endorsement" }
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: etcdraft
+    EtcdRaft:
+        Consenters:
+        - Host: orderer.traceability.com
+          Port: 7050
+          ClientTLSCert: organizations/ordererOrganizations/traceability.com/orderers/orderer.traceability.com/tls/server.crt
+          ServerTLSCert: organizations/ordererOrganizations/traceability.com/orderers/orderer.traceability.com/tls/server.crt
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+        Readers: { Type: ImplicitMeta, Rule: "ANY Readers" }
+        Writers: { Type: ImplicitMeta, Rule: "ANY Writers" }
+        Admins:  { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
+        BlockValidation: { Type: ImplicitMeta, Rule: "ANY Writers" }
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers: { Type: ImplicitMeta, Rule: "ANY Readers" }
+        Writers: { Type: ImplicitMeta, Rule: "ANY Writers" }
+        Admins:  { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+    ThreeOrgsOrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SantaRosaConsortium:
+                Organizations:
+                    - *FarmerOrg
+                    - *VetOrg
+                    - *RegulatorOrg
+    ThreeOrgsChannel:
+        Consortium: SantaRosaConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *FarmerOrg
+                - *VetOrg
+                - *RegulatorOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
