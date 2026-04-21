@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import AuditTrailModal from "../../components/common/AuditTrailModal";
 import MedicalLogModal from "../../components/common/MedicalLogModal";
+import QRCodeModal from "../../components/common/QRCodeModal";
 
 export default function AdminAnimalDB() {
   const [transactions, setTransactions] = useState([]);
@@ -30,6 +31,10 @@ export default function AdminAnimalDB() {
   const [healthLogs, setHealthLogs] = useState([]);
   const [healthLoading, setHealthLoading] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
+
+  // QR Code Modal States
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [selectedAnimalForQR, setSelectedAnimalForQR] = useState(null);
 
   useEffect(() => {
     fetchAllTransactions();
@@ -579,6 +584,12 @@ export default function AdminAnimalDB() {
                             </a>
                           )}
                         <button
+                          onClick={() => { setSelectedAnimalForQR(animal); setShowQRModal(true); }}
+                          className="flex items-center gap-2 text-purple-600 bg-purple-50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-100 transition-colors"
+                        >
+                          📱 QR Code
+                        </button>
+                        <button
                           onClick={() => viewHealthRecords(animal)}
                           className="flex items-center gap-2 text-blue-600 bg-blue-50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors"
                         >
@@ -615,6 +626,12 @@ export default function AdminAnimalDB() {
         historyLoading={historyLoading}
         history={history}
         selectedAnimal={selectedAnimal}
+      />
+      <QRCodeModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        batchId={selectedAnimalForQR?.batchId || selectedAnimalForQR?._id}
+        animal={selectedAnimalForQR}
       />
     </div>
   );

@@ -198,8 +198,9 @@ router.get("/history/:id", async (req, res) => {
 
     await gateway.disconnect();
     res.json(fullHistory);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error("BLOCKCHAIN HISTORY ERROR:", error);
+    res.status(500).json({ error: "Failed to get history", details: error.message });
   }
 });
 

@@ -1,0 +1,16 @@
+{
+  "name": "thesis-monorepo",
+  "version": "1.0.0",
+  "description": "Animal Traceability System Monorepo",
+  "scripts": {
+    "install:frontend": "cd Animal-Disease-Traceability/Thesis-Project && npm install",
+    "install:api": "cd animal-traceability-api && npm install",
+    "install:all": "npm run install:frontend && npm run install:api",
+    "start:frontend": "cd Animal-Disease-Traceability/Thesis-Project && npm run dev",
+    "start:api": "cd animal-traceability-api && node server.js",
+    "dev": "concurrently -n \"API,FRONTEND\" -c \"bgBlue.bold,bgGreen.bold\" --kill-others-on-fail \"npm run start:api\" \"npm run start:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

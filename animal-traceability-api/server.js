@@ -264,6 +264,10 @@ app.use("/api/transfers", transfersRouter);
 const riskRoutes = require('./routes/risk');
 app.use('/api', riskRoutes);
 
+// Public Digital Animal Passport (read-only, no auth required)
+const passportRouter = require("./routes/passport");
+app.use("/api/passport", passportRouter);
+
 // --- 4. BROADCAST EMAIL ALERT ROUTE (UPDATED WITH DB SAVING) ---
 app.post("/api/send-alert", async (req, res) => {
   // We extract 'metadata' now because the frontend is sending the structured template fields

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuditTrailModal from "../../components/common/AuditTrailModal";
 import MedicalLogModal from "../../components/common/MedicalLogModal";
+import QRCodeModal from "../../components/common/QRCodeModal";
 
 export default function PublicLedger() {
   const navigate = useNavigate();
@@ -25,6 +26,10 @@ export default function PublicLedger() {
 
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
+
+  // QR Code Modal States
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [selectedAnimalForQR, setSelectedAnimalForQR] = useState(null);
 
   // --- RISK ASSESSMENT MODAL STATES ---
   const [farmRisk, setFarmRisk] = useState(null);
@@ -454,6 +459,12 @@ export default function PublicLedger() {
                         >
                           Log
                         </button>
+                        <button
+                          onClick={() => { setSelectedAnimalForQR(tx); setShowQRModal(true); }}
+                          className="bg-purple-50 text-purple-600 px-3 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-purple-600 hover:text-white transition-all"
+                        >
+                          QR
+                        </button>
                       </div>
                     </td>
                     <td className="py-3 px-4 bg-white shadow-sm group-hover:shadow-md transition-all">
@@ -598,6 +609,12 @@ export default function PublicLedger() {
             (t) => (t.batchId || t._id) === history[0]?.data?.batchId,
           ) || {}
         }
+      />
+      <QRCodeModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        batchId={selectedAnimalForQR?.batchId || selectedAnimalForQR?._id}
+        animal={selectedAnimalForQR}
       />
     </div>
   );

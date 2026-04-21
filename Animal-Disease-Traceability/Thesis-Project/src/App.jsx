@@ -16,6 +16,7 @@ import Login from "./pages/auth/Login";
 import MovementMap from "./pages/public/MovementMap";
 import FAQ from "./pages/public/FAQ";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import DigitalPassport from "./pages/public/DigitalPassport";
 
 // import PublicLedger from "./pages/public/PublicLedger";
 import Table from "./components/common/Table";
@@ -116,6 +117,9 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {/* Digital Animal Passport — Standalone (no header/footer) */}
+        <Route path="/passport/:batchId" element={<DigitalPassport />} />
+
         {/* 1. Public Routes */}
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<LandingPage />} />

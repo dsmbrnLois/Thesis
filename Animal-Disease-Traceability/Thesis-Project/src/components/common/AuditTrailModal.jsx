@@ -14,10 +14,11 @@ export default function AuditTrailModal({
     return new Date(isoString).toLocaleString();
   };
 
-  // --- ORIGIN TRACE LOGIC ---
+  // --- ORIGIN TRACE LOGIC (ARMORED) ---
   const movementPath = useMemo(() => {
-    if (!history || history.length === 0) return [];
-    // Movement path still needs to be calculated chronologically (oldest to newest)
+    // 🛡️ DEFENSIVE CHECK: Ensure history is actually an array before spreading
+    if (!Array.isArray(history) || history.length === 0) return [];
+    
     const chronological = [...history].sort(
       (a, b) => new Date(a.data.timestamp) - new Date(b.data.timestamp),
     );
@@ -31,16 +32,17 @@ export default function AuditTrailModal({
     return path;
   }, [history]);
 
-  // --- REVERSE CHRONOLOGICAL SORT FOR TIMELINE ---
+  // --- REVERSE CHRONOLOGICAL SORT FOR TIMELINE (ARMORED) ---
   const sortedHistory = useMemo(() => {
-    if (!history) return [];
+    // 🛡️ DEFENSIVE CHECK: Ensure history is actually an array before spreading
+    if (!Array.isArray(history) || history.length === 0) return [];
+    
     return [...history].sort(
       (a, b) => new Date(b.data.timestamp) - new Date(a.data.timestamp),
     );
   }, [history]);
 
-  // --- NEW: DYNAMIC HEADER DATA EXTRACTION ---
-  // Always prefer the newest blockchain data over the local state to ensure accuracy
+  // --- DYNAMIC HEADER DATA EXTRACTION ---
   const displayData = useMemo(() => {
     if (sortedHistory.length > 0) {
       const newestRecord = sortedHistory[0].data;
@@ -50,7 +52,6 @@ export default function AuditTrailModal({
         quantity: newestRecord.quantity,
       };
     }
-    // Fallback to selectedAnimal if history hasn't loaded yet
     return {
       batchId: selectedAnimal?.batchId || "Loading...",
       species: selectedAnimal?.species || "...",
@@ -88,6 +89,15 @@ export default function AuditTrailModal({
                 Fetching Cryptographic Ledger...
               </p>
             </div>
+          ) : !Array.isArray(history) ? (
+            /* 🛡️ NEW ERROR STATE UI: Shows when backend sends an error instead of data */
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <span className="text-4xl mb-4">⚠️</span>
+              <h4 className="text-lg font-bold text-red-600 mb-2">Ledger Verification Failed</h4>
+              <p className="text-slate-500 text-sm px-10">
+                The node was unable to retrieve the history for this asset. It may have been archived, or the network timed out.
+              </p>
+            </div>
           ) : sortedHistory.length === 0 ? (
             <p className="text-center text-slate-400 py-10 italic">
               No blockchain records found.
@@ -119,13 +129,11 @@ export default function AuditTrailModal({
               {/* TIMELINE (Newest First) */}
               <div className="space-y-0 mt-4">
                 {sortedHistory.map((item, i) => {
-                  // 1. Detect if this is the Child -> Parent boundary
                   const isFirstParentEvent =
                     item.isInherited &&
                     i > 0 &&
                     !sortedHistory[i - 1].isInherited;
 
-                  // 2. Detect if a quantity deduction (Split) happened in the Parent Batch
                   const olderItem = sortedHistory[i + 1];
                   const isDeduction =
                     olderItem &&
@@ -137,7 +145,6 @@ export default function AuditTrailModal({
 
                   return (
                     <React.Fragment key={i}>
-                      {/* BOUNDARY DIVIDER: From Child to Parent Lineage */}
                       {isFirstParentEvent && (
                         <div className="relative pl-10 py-6">
                           <div className="absolute left-[11px] top-0 bottom-0 w-0.5 border-l-2 border-slate-300 border-dashed"></div>
@@ -149,18 +156,15 @@ export default function AuditTrailModal({
                       )}
 
                       <div className="relative pl-10 pb-10 group">
-                        {/* Timeline Line */}
                         {i !== sortedHistory.length - 1 &&
                           !isFirstParentEvent && (
                             <div className="absolute left-[11px] top-6 bottom-0 w-0.5 bg-slate-200 group-hover:bg-emerald-200 transition-colors"></div>
                           )}
-                        {/* Connect line through the boundary divider */}
                         {i !== sortedHistory.length - 1 &&
                           isFirstParentEvent && (
                             <div className="absolute left-[11px] top-6 bottom-0 w-0.5 bg-slate-200 group-hover:bg-emerald-200 transition-colors"></div>
                           )}
 
-                        {/* Node Dot (Gray for Parent, Green for Child) */}
                         <div
                           className={`absolute left-0 top-1 w-6 h-6 rounded-full border-4 border-white shadow-md z-10 ${item.isInherited ? "bg-slate-400 shadow-slate-200" : "bg-emerald-500 shadow-emerald-200"}`}
                         ></div>
@@ -168,7 +172,6 @@ export default function AuditTrailModal({
                         <div
                           className={`bg-white border rounded-2xl p-5 transition-all hover:shadow-xl ${item.isInherited ? "border-slate-200 opacity-80" : "border-slate-200 hover:border-emerald-500/30 hover:shadow-slate-200/50"}`}
                         >
-                          {/* Transaction Header */}
                           <div className="flex justify-between items-start mb-4">
                             <span className="bg-slate-900 text-white text-[10px] px-2 py-1 rounded font-mono uppercase tracking-widest">
                               TX: {item.txId.substring(0, 12)}...
@@ -191,7 +194,6 @@ export default function AuditTrailModal({
                             )}
                           </p>
 
-                          {/* --- PARENT SPLIT/DEDUCTION BANNER --- */}
                           {isDeduction && (
                             <div className="mb-4 bg-orange-50 border border-orange-200 p-3.5 rounded-xl flex items-center gap-3 shadow-sm">
                               <span className="text-xl">✂️</span>
@@ -207,7 +209,6 @@ export default function AuditTrailModal({
                             </div>
                           )}
 
-                          {/* Main Data Grid */}
                           <div className="grid grid-cols-2 gap-3 text-[11px] text-slate-500 font-medium">
                             <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
                               <span className="block text-slate-400 uppercase text-[9px] mb-1">
@@ -263,7 +264,6 @@ export default function AuditTrailModal({
                             </div>
                           </div>
 
-                          {/* Diagnosis Alert */}
                           {item.data.diagnosedDisease &&
                             item.data.severity !== "safe" &&
                             item.data.severity !== "Ongoing" && (
