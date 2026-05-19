@@ -1,9 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
+import API_URL from "../../config/api";
+import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
 
 export default function VetTransactionLogs() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("pending"); // 'pending' or 'managed'
+  const [txLoading, setTxLoading] = useState(false);
+  const [txMessage, setTxMessage] = useState("");
 
   // --- Table Controls State ---
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,7 +38,7 @@ export default function VetTransactionLogs() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       const activeData = (data || []).filter(
         (tx) => !["Slaughtered", "Exported", "Culled"].includes(tx.status),
@@ -156,9 +160,11 @@ export default function VetTransactionLogs() {
         ? "Cull Ordered"
         : "Verified by Vet";
 
+    setTxLoading(true);
+    setTxMessage(diagnosisForm.severity === "dangerous" ? "Issuing cull order on blockchain..." : "Recording diagnosis on blockchain...");
     try {
       const res = await fetch(
-        `http://localhost:3001/api/transactions/${selectedTx._id}`,
+        `${API_URL}/transactions/${selectedTx._id}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -190,6 +196,8 @@ export default function VetTransactionLogs() {
       );
     } catch (err) {
       alert("Error: " + err.message);
+    } finally {
+      setTxLoading(false);
     }
   };
 
@@ -197,6 +205,8 @@ export default function VetTransactionLogs() {
     const storedUser = localStorage.getItem("user");
     const currentUser = JSON.parse(storedUser);
 
+    setTxLoading(true);
+    setTxMessage("Saving medical record...");
     try {
       const formData = new FormData();
       formData.append("batchId", selectedTx.batchId || selectedTx._id);
@@ -212,7 +222,7 @@ export default function VetTransactionLogs() {
         formData.append("proofFile", healthLogForm.proofFile);
       }
 
-      const res = await fetch("http://localhost:3001/api/health-records", {
+      const res = await fetch(`${API_URL}/health-records`, {
         method: "POST",
         body: formData,
       });
@@ -223,6 +233,8 @@ export default function VetTransactionLogs() {
       alert("Medical record added to digital log!");
     } catch (err) {
       alert("Error: " + err.message);
+    } finally {
+      setTxLoading(false);
     }
   };
 
@@ -766,6 +778,7 @@ export default function VetTransactionLogs() {
           </div>
         </div>
       )}
+      <TransactionLoadingOverlay isOpen={txLoading} message={txMessage} />
     </div>
   );
 }

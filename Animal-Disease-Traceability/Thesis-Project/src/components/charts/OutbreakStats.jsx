@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../../config/api";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +46,7 @@ export default function OutbreakStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/transactions");
+        const res = await fetch(`${API_URL}/transactions`);
         const data = await res.json();
         setTransactions(data || []);
       } catch (err) {

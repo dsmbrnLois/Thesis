@@ -1,4 +1,5 @@
 // src/pages/admin/TransactionLogs.jsx
+import API_URL from "../../config/api";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 
@@ -12,7 +13,7 @@ export default function AdminTransaction() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       setTransactions(data);
     } catch (err) {

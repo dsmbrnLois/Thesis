@@ -1,6 +1,7 @@
 // src/pages/public/DigitalPassport.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import API_URL from "../../config/api";
 
 // =============================================
 // Inline styles for complete standalone rendering
@@ -19,8 +20,6 @@ const COLORS = {
   blue50: "#eff6ff", blue100: "#dbeafe", blue500: "#3b82f6", blue600: "#2563eb",
   white: "#ffffff",
 };
-
-const API_URL = "http://localhost:3001/api";
 
 export default function DigitalPassport() {
   const { batchId } = useParams();

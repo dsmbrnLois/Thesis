@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../../config/api";
 import { Bar, Pie } from "react-chartjs-2";
 import { MapContainer, TileLayer, GeoJSON, ZoomControl, useMap } from "react-leaflet"; // Added useMap
 import { useNavigate } from "react-router-dom";
@@ -73,7 +74,7 @@ export default function AnimalMovement() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       const txData = Array.isArray(data) ? data : [];
       setRawTransactions(txData);

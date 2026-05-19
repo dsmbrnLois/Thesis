@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import API_URL from "../../config/api";
 import MedicalLogModal from "../../components/common/MedicalLogModal";
 
 export default function HealthRecord() {
@@ -28,7 +29,7 @@ export default function HealthRecord() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       const txData = Array.isArray(data) ? data : [];
 
@@ -124,7 +125,7 @@ export default function HealthRecord() {
 
     try {
       const res = await fetch(
-        `http://localhost:3001/api/health-records/${lookupId}`,
+        `${API_URL}/health-records/${lookupId}`,
       );
       if (!res.ok) throw new Error("Failed to load records");
       const data = await res.json();

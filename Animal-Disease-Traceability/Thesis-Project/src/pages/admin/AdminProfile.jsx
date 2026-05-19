@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../../config/api";
 import axios from "axios";
 
 export default function AdminProfile() {
@@ -18,7 +19,7 @@ export default function AdminProfile() {
     try {
       const savedUser = JSON.parse(localStorage.getItem("user"));
       const username = savedUser?.username || savedUser?.email;
-      const response = await axios.get(`http://localhost:3001/api/profile/${username}`);
+      const response = await axios.get(`${API_URL}/profile/${username}`);
       
       setProfile(response.data);
       setFormData({
@@ -39,7 +40,7 @@ export default function AdminProfile() {
 
     try {
       const res = await axios.put(
-        `http://localhost:3001/api/profile/update/${profile.username}`, 
+        `${API_URL}/profile/update/${profile.username}`, 
         { contactNumber: formData.contactNumber }
       );
       setProfile(res.data.user);

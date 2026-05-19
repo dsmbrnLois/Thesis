@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import API_URL from "../../config/api";
+import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
 
 export default function AdminAlert() {
   const [targetBarangay, setTargetBarangay] = useState("All");
@@ -18,7 +20,7 @@ export default function AdminAlert() {
 
   const fetchAlertHistory = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/alert-history");
+      const response = await fetch(`${API_URL}/alert-history`);
       if (response.ok) {
         const data = await response.json();
         setHistory(data);
@@ -41,7 +43,7 @@ export default function AdminAlert() {
     if (!window.confirm("Are you sure you want to remove this record from the logs?")) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/delete-alert/${id}`, {
+      const response = await fetch(`${API_URL}/delete-alert/${id}`, {
         method: "DELETE",
       });
 
@@ -81,7 +83,7 @@ export default function AdminAlert() {
     `.trim();
 
     try {
-      const response = await fetch("http://localhost:3001/api/send-alert", {
+      const response = await fetch(`${API_URL}/send-alert`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -369,6 +371,7 @@ export default function AdminAlert() {
           </div>
         </div>
       )}
+      <TransactionLoadingOverlay isOpen={isSending} message="Broadcasting alert..." />
     </div>
   );
 }

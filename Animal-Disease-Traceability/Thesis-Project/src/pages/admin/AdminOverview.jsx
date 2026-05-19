@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_URL from "../../config/api";
 import { MapContainer, TileLayer, GeoJSON, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -29,11 +30,11 @@ export default function AdminOverview() {
 
   const fetchAllData = async () => {
     try {
-      const txRes = await fetch("http://localhost:3001/api/transactions");
+      const txRes = await fetch(`${API_URL}/transactions`);
       if (!txRes.ok) throw new Error("Failed to fetch transactions");
       const txData = await txRes.json();
 
-      const healthRes = await fetch("http://localhost:3001/api/health-records");
+      const healthRes = await fetch(`${API_URL}/health-records`);
       if (!healthRes.ok) throw new Error("Failed to fetch health records");
       const healthData = await healthRes.json();
 

@@ -1,8 +1,10 @@
 // src/config/api.js
 import axios from "axios";
 
-// This points to your Node.js API running in WSL
-const API_URL = "http://localhost:3001/api";
+// Centralized API URL — reads from env variable with localhost fallback.
+// To change for demo: create .env.local with VITE_API_URL=http://192.168.x.x:3001/api
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+export default API_URL;
 
 export const registerUser = async (userData) => {
   try {

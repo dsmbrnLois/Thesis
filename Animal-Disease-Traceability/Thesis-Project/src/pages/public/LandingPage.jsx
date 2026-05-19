@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import API_URL from "../../config/api";
 import { useNavigate } from "react-router-dom";
 import { fetchUsers } from "../../config/api"; 
 import { Bar, Pie, Line } from "react-chartjs-2";
@@ -47,7 +48,7 @@ export default function LandingPage() {
 
   const fetchAlertHistory = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/alert-history");
+      const response = await fetch(`${API_URL}/alert-history`);
       if (response.ok) {
         const data = await response.json();
         setHistory(data);
@@ -60,7 +61,7 @@ export default function LandingPage() {
   const fetchDashboardData = useCallback(async (isManual = false) => {
     if (isManual) setIsRefreshing(true);
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const txData = await res.json();
       const transactions = Array.isArray(txData) ? txData : [];
 

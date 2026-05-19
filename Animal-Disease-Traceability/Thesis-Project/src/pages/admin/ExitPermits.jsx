@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import API_URL from "../../config/api";
+import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
 
 export default function ExitPermits() {
   const [requests, setRequests] = useState([]);
@@ -12,7 +14,7 @@ export default function ExitPermits() {
   const fetchRequests = async () => {
     try {
       const res = await fetch(
-        "http://localhost:3001/api/transfers/pending-exit",
+        `${API_URL}/transfers/pending-exit`,
       );
       const data = await res.json();
       setRequests(data || []);
@@ -45,7 +47,7 @@ export default function ExitPermits() {
 
     try {
       const res = await fetch(
-        "http://localhost:3001/api/transfers/regulator-verify",
+        `${API_URL}/transfers/regulator-verify`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -199,6 +201,7 @@ export default function ExitPermits() {
           </table>
         )}
       </div>
+      <TransactionLoadingOverlay isOpen={processing} message="Burning asset on blockchain..." />
     </div>
   );
 }

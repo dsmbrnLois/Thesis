@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import API_URL from "../../config/api";
 import { useNavigate } from "react-router-dom";
 import { Line, Pie } from "react-chartjs-2";
 import {
@@ -61,7 +62,7 @@ export default function AdminAnalytics() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/transactions");
+        const res = await fetch(`${API_URL}/transactions`);
         const data = await res.json();
         setTransactions(Array.isArray(data) ? data : []);
       } catch (err) {

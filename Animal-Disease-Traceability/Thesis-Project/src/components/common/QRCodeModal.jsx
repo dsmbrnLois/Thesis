@@ -6,7 +6,8 @@ export default function QRCodeModal({ isOpen, onClose, batchId, animal }) {
   if (!isOpen || !batchId) return null;
 
   const qrRef = useRef(null);
-  const passportUrl = `${window.location.origin}/passport/${batchId}`;
+  const baseUrl = import.meta.env.VITE_PUBLIC_FRONTEND_URL || window.location.origin;
+  const passportUrl = `${baseUrl}/passport/${batchId}`;
 
   const formatDate = (isoString) => {
     if (!isoString) return "N/A";

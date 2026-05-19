@@ -1,4 +1,5 @@
 // src/pages/admin/LivestockDatabase.jsx
+import API_URL from "../../config/api";
 import React, { useState, useEffect, useMemo } from "react";
 import AuditTrailModal from "../../components/common/AuditTrailModal";
 import MedicalLogModal from "../../components/common/MedicalLogModal";
@@ -42,7 +43,7 @@ export default function AdminAnimalDB() {
 
   const fetchAllTransactions = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       setTransactions(data || []);
       processTransactions(data || []);
@@ -171,7 +172,7 @@ export default function AdminAnimalDB() {
         const adminMsp = localStorage.getItem("mspId");
 
         const lookupId = transaction.batchId || transaction._id;
-        const url = `http://localhost:3001/api/transactions/history/${lookupId}?username=${adminUser}&mspId=${adminMsp}`;
+        const url = `${API_URL}/transactions/history/${lookupId}?username=${adminUser}&mspId=${adminMsp}`;
 
         const res = await fetch(url);
         if (!res.ok) throw new Error("Blockchain data unreachable");
@@ -197,7 +198,7 @@ export default function AdminAnimalDB() {
 
     try {
       const res = await fetch(
-        `http://localhost:3001/api/health-records/${lookupId}`,
+        `${API_URL}/health-records/${lookupId}`,
       );
       if (!res.ok) throw new Error("Failed to fetch health records");
       const data = await res.json();

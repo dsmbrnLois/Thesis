@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from "react";
+import API_URL from "../../config/api";
+import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
 
 export default function Logistics() {
   const [animals, setAnimals] = useState([]);
   const [activeTab, setActiveTab] = useState("apply");
   const [outgoing, setOutgoing] = useState([]);
   const [incoming, setIncoming] = useState([]);
+  const [txLoading, setTxLoading] = useState(false);
+  const [txMessage, setTxMessage] = useState("");
 
   // FILE UPLOAD STATE (For Senders - Exit Proofs & PODs)
   const fileInputRef = useRef(null);
@@ -49,7 +53,7 @@ export default function Logistics() {
   const fetchInventory = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/transactions/${currentUser}`,
+        `${API_URL}/transactions/${currentUser}`,
       );
       const data = await res.json();
       setAnimals(data || []);
@@ -67,7 +71,7 @@ export default function Logistics() {
   const fetchMovements = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/transfers/${currentUser}`,
+        `${API_URL}/transfers/${currentUser}`,
       );
       const data = await res.json();
       const out = data.filter((r) => r.farmerUsername === currentUser);
@@ -95,7 +99,7 @@ export default function Logistics() {
 
     try {
       const res = await fetch(
-        "http://localhost:3001/api/transfers/upload-proof",
+        `${API_URL}/transfers/upload-proof`,
         {
           method: "POST",
           body: fd,
@@ -124,9 +128,11 @@ export default function Logistics() {
     )
       return;
 
+    setTxLoading(true);
+    setTxMessage("Confirming receipt on blockchain...");
     try {
       const res = await fetch(
-        "http://localhost:3001/api/transfers/receiver-confirm",
+        `${API_URL}/transfers/receiver-confirm`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -145,6 +151,8 @@ export default function Logistics() {
       fetchInventory();
     } catch (err) {
       alert("Error: " + err.message);
+    } finally {
+      setTxLoading(false);
     }
   };
 
@@ -174,8 +182,10 @@ export default function Logistics() {
       transferQuantity: parseInt(formData.transferQuantity),
     };
 
+    setTxLoading(true);
+    setTxMessage("Submitting transport request...");
     try {
-      const res = await fetch("http://localhost:3001/api/transfers/request", {
+      const res = await fetch(`${API_URL}/transfers/request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -189,6 +199,8 @@ export default function Logistics() {
       fetchMovements();
     } catch (err) {
       alert("Submission Error: " + err.message);
+    } finally {
+      setTxLoading(false);
     }
   };
 
@@ -212,9 +224,11 @@ export default function Logistics() {
     fd.append("disposalMethod", cullModal.disposalMethod);
     fd.append("proofFile", cullModal.proofFile);
 
+    setTxLoading(true);
+    setTxMessage("Recording disposal on blockchain...");
     try {
       const res = await fetch(
-        "http://localhost:3001/api/transfers/submit-cull",
+        `${API_URL}/transfers/submit-cull`,
         {
           method: "POST",
           body: fd,
@@ -231,6 +245,8 @@ export default function Logistics() {
       setActiveTab("outgoing");
     } catch (err) {
       alert("Error: " + err.message);
+    } finally {
+      setTxLoading(false);
     }
   };
 
@@ -749,6 +765,7 @@ export default function Logistics() {
           </div>
         </div>
       )}
+      <TransactionLoadingOverlay isOpen={txLoading} message={txMessage} />
     </div>
   );
 }

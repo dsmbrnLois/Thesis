@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import AuditTrailModal from "../../components/common/AuditTrailModal";
 import MedicalLogModal from "../../components/common/MedicalLogModal";
 import QRCodeModal from "../../components/common/QRCodeModal";
+import API_URL from "../../config/api";
+import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
 
 export default function PublicLedger() {
   const navigate = useNavigate();
@@ -10,6 +12,8 @@ export default function PublicLedger() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
+  const [txLoading, setTxLoading] = useState(false);
+  const [txMessage, setTxMessage] = useState("");
   const [mspId, setMspId] = useState("");
 
   // Blockchain History States
@@ -56,7 +60,7 @@ export default function PublicLedger() {
         setMspId(userMsp);
 
         const res = await fetch(
-          `http://localhost:3001/api/transactions/${loggedInUser}`,
+          `${API_URL}/transactions/${loggedInUser}`,
         );
         const data = await res.json();
         setTransactions(data || []);
@@ -97,9 +101,11 @@ export default function PublicLedger() {
       let dangerousCount = 0;
 
       transactions.forEach((tx) => {
-        if (tx.severity === "safe") safeCount++;
-        else if (tx.severity === "mild") mildCount++;
-        else if (tx.severity === "dangerous") dangerousCount++;
+
+        const qty = Number(tx.quantity || 0);
+        if (tx.severity === "safe") safeCount += qty;
+        else if (tx.severity === "mild") mildCount += qty;
+        else if (tx.severity === "dangerous") dangerousCount += qty;
       });
 
       const totalDiagnosed = safeCount + mildCount + dangerousCount;
@@ -125,7 +131,7 @@ export default function PublicLedger() {
           missingIds.map(async (id) => {
             try {
               const res = await fetch(
-                `http://localhost:3001/api/health-records/${id}`,
+                `${API_URL}/health-records/${id}`,
               );
               const data = await res.json();
               return [id, Array.isArray(data) ? data.length : 0];
@@ -145,7 +151,7 @@ export default function PublicLedger() {
       );
 
       // 2. SEND TO PYTHON ML ENGINE
-      const response = await fetch("http://localhost:3001/api/calculate-risk", {
+      const response = await fetch(`${API_URL}/calculate-risk`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -173,6 +179,8 @@ export default function PublicLedger() {
         color: riskData.color,
         description: riskData.description,
         advice: riskData.advice,
+        model_status: riskData.model_status,
+        ml_active: riskData.ml_active,
         totalPop,
         safeCount,
         mildCount,
@@ -193,7 +201,7 @@ export default function PublicLedger() {
     setShowHistoryModal(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/api/transactions/history/${lookupId}?username=${username}&mspId=${mspId}`,
+        `${API_URL}/transactions/history/${lookupId}?username=${username}&mspId=${mspId}`,
       );
       const data = await res.json();
       setHistory(data || []);
@@ -211,7 +219,7 @@ export default function PublicLedger() {
     setShowHealthModal(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/api/health-records/${lookupId}`,
+        `${API_URL}/health-records/${lookupId}`,
       );
       const data = await res.json();
       setHealthLogs(data || []);
@@ -244,8 +252,10 @@ export default function PublicLedger() {
       blockchainTxId: null,
     };
 
+    setTxLoading(true);
+    setTxMessage("Registering animal on blockchain...");
     try {
-      const response = await fetch("http://localhost:3001/api/transactions", {
+      const response = await fetch(`${API_URL}/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTx),
@@ -261,6 +271,8 @@ export default function PublicLedger() {
       }));
     } catch (err) {
       alert("Error: " + err.message);
+    } finally {
+      setTxLoading(false);
     }
   };
 
@@ -270,7 +282,8 @@ export default function PublicLedger() {
       (tx.batchId || "").toLowerCase().includes(query) ||
       (tx.species || "").toLowerCase().includes(query)
     );
-  });
+  })
+  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   return (
     <div className="min-h-screen py-6 px-3 sm:px-6 lg:px-10 bg-transparent">
@@ -511,6 +524,9 @@ export default function PublicLedger() {
                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 mb-2">
                     Farm Health Security Index
                   </h3>
+                  <div className="inline-block px-3 py-1 bg-slate-800 text-slate-400 text-[9px] uppercase tracking-widest rounded-full mb-3 border border-slate-700">
+                    🧠 {farmRisk.model_status}
+                  </div>
                   <div className="flex items-baseline gap-3">
                     <span
                       className={`text-7xl font-black tracking-tighter ${farmRisk.color}`}
@@ -616,6 +632,7 @@ export default function PublicLedger() {
         batchId={selectedAnimalForQR?.batchId || selectedAnimalForQR?._id}
         animal={selectedAnimalForQR}
       />
+      <TransactionLoadingOverlay isOpen={txLoading} message={txMessage} />
     </div>
   );
 }

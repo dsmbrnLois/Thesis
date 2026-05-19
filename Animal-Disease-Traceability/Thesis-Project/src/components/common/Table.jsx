@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../../config/api";
 import { useNavigate } from "react-router-dom";
 
 export default function BarangayHealthTable() {
@@ -51,7 +52,7 @@ export default function BarangayHealthTable() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       const txData = Array.isArray(data) ? data : [];
       setRawTransactions(txData); // Store original data

@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
+import API_URL from "../../config/api";
+import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
 
 export default function MovementPermits() {
   const [requests, setRequests] = useState([]);
@@ -22,7 +24,7 @@ export default function MovementPermits() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transfers/pending");
+      const res = await fetch(`${API_URL}/transfers/pending`);
       const data = await res.json();
       console.log("Raw Pending Requests from DB:", data);
       setRequests(data || []);
@@ -46,7 +48,7 @@ export default function MovementPermits() {
     try {
       // 1. Fetch Medical Records (Using existing healthRecords.js route)
       const medRes = await fetch(
-        `http://localhost:3001/api/health-records/${request.batchId}`,
+        `${API_URL}/health-records/${request.batchId}`,
       );
       const medData = await medRes.json();
       console.log("Raw Medical Data:", medData);
@@ -54,7 +56,7 @@ export default function MovementPermits() {
 
       // 2. Fetch Audit Trail (Blockchain)
       const auditRes = await fetch(
-        `http://localhost:3001/api/transactions/history/${request.batchId}?username=${user.username}&mspId=${user.mspId}`,
+        `${API_URL}/transactions/history/${request.batchId}?username=${user.username}&mspId=${user.mspId}`,
       );
       if (auditRes.ok) {
         const auditData = await auditRes.json();
@@ -86,8 +88,8 @@ export default function MovementPermits() {
     try {
       let url =
         decision === "APPROVE"
-          ? "http://localhost:3001/api/transfers/vet-approve"
-          : "http://localhost:3001/api/transfers/reject";
+          ? `${API_URL}/transfers/vet-approve`
+          : `${API_URL}/transfers/reject`;
 
       let body =
         decision === "APPROVE"
@@ -516,6 +518,7 @@ export default function MovementPermits() {
           </div>
         </div>
       )}
+      <TransactionLoadingOverlay isOpen={processing} message="Signing VHC on blockchain..." />
     </div>
   );
 }

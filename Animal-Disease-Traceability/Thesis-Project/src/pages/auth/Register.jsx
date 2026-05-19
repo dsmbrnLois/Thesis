@@ -48,22 +48,14 @@ export default function Register() {
     setError("");
     setLoading(true);
 
-    // --- 1. FORMAT AND VALIDATE CONTACT NUMBER ---
-    // This converts 0917... to +63917...
-    let formattedContact = formData.contactNumber;
-    if (formattedContact.startsWith('0')) {
-      formattedContact = '+63' + formattedContact.substring(1);
-    } else if (!formattedContact.startsWith('+63')) {
-      formattedContact = '+63' + formattedContact;
-    }
-
-    // Validate the new formatted length (+63 + 10 digits = 13 characters)
-    if (!/^\+63\d{10}$/.test(formattedContact)) {
-      setError("Please enter a valid 11-digit mobile number (e.g., 09123456789).");
+    // --- 1. STRICT 11-DIGIT VALIDATION (09 Format) ---
+    // Matches exactly 11 digits starting with '09'
+    if (!/^09\d{9}$/.test(formData.contactNumber)) {
+      setError("Please enter a valid 11-digit mobile number starting with 09 (e.g., 09123456789).");
       setLoading(false);
       return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -90,7 +82,7 @@ export default function Register() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        contactNumber: formattedContact, // USE THE FORMATTED NUMBER HERE
+        contactNumber: formData.contactNumber,
         password: formData.password,
         role: formData.role,
         barangay: formData.barangay,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import API_URL from "../../config/api";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -48,7 +49,7 @@ export default function SummaryReport() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/transactions");
+      const res = await fetch(`${API_URL}/transactions`);
       const data = await res.json();
       const txData = Array.isArray(data) ? data : [];
       setTransactions(txData);

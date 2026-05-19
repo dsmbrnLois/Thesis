@@ -53,7 +53,7 @@ def main():
             z = (dR * 5.0) + (mR * 2.0) + (sR * -3.5) + (pF * 0.8) - (lF * 0.9) - 0.5
             probability = 1 / (1 + math.exp(-z))
             ml_active = False
-            model_status = "Heuristic Fallback Active (Awaiting Training)"
+            model_status = "Heuristic Model Active"
 
         # 4. Format the output
         score = round(probability * 100)
