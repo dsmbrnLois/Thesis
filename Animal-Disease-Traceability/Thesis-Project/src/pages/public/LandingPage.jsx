@@ -285,7 +285,7 @@ export default function LandingPage() {
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Movement</p>
                 </div>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 sm:mb-5">City Heatmap and Population Census</h3>
+              <h3 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 sm:mb-5">City Distribution Map and Population Census</h3>
               <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
                 Real-time tracking of livestock demographics and distribution across Santa Rosa. 
                 By monitoring population shifts and species-specific data, authorities can 

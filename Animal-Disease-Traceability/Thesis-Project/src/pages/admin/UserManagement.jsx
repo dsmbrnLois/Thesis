@@ -50,7 +50,7 @@ export default function AdminUserManagement() {
   }, [users, searchQuery, filterRole]);
 
   return (
-    <div className="p-6 md:p-10 bg-slate-50 min-h-screen w-full font-sans">
+    <div className="p-6 md:p-10 min-h-screen w-full font-sans">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight">

@@ -238,7 +238,7 @@ export default function AdminAnimalDB() {
   }
 
   return (
-    <div className="p-6 md:p-10 bg-slate-50 min-h-screen w-full font-sans pb-10">
+    <div className="p-6 md:p-10 min-h-screen w-full font-sans pb-10">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>

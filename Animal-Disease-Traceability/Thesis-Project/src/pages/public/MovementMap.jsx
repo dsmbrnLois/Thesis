@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import API_URL from "../../config/api";
 import { Bar, Pie } from "react-chartjs-2";
-import { MapContainer, TileLayer, GeoJSON, ZoomControl, useMap } from "react-leaflet"; // Added useMap
+import { MapContainer, TileLayer, ZoomControl, useMap, Marker, Tooltip as MapTooltip } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-import santaRosaData from "../../assets/data/santa_rosa.json";
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -45,7 +42,6 @@ export default function AnimalMovement() {
   });
   const [barangayMapStats, setBarangayMapStats] = useState({});
   const [topBarangays, setTopBarangays] = useState([]);
-
   const [rawTransactions, setRawTransactions] = useState([]);
   const currentYear = new Date().getFullYear();
   const [filterMode, setFilterMode] = useState("preset");
@@ -54,13 +50,32 @@ export default function AnimalMovement() {
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
   const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
   const SPECIES_LIST = ["Hog", "Cow", "Chicken", "Carabao", "Goat", "Duck"];
   const VALID_BARANGAYS = [
     "Aplaya", "Balibago", "Caingin", "Dila", "Dita", "Don Jose", "Ibaba",
     "Kanluran", "Labas", "Macabling", "Malitlit", "Malusak", "Market Area",
     "Pooc", "Pulong Santa Cruz", "Santo Domingo", "Sinalhan", "Tagapo"
   ];
+  const BARANGAY_COORDINATES = {
+  "Aplaya": [14.31154598315434, 121.12293649608242],
+  "Balibago": [14.295928037194432, 121.10483051593049],
+  "Caingin": [14.299639566034141, 121.12806320764989],
+  "Dila": [14.288382907890114, 121.10856053327888],
+  "Dita": [14.282172894149047, 121.11144758254402],
+  "Don Jose": [14.25681265902661, 121.06571229500739],
+  "Ibaba": [14.314844035906486, 121.11829909282906],
+  "Kanluran": [14.313429086779156, 121.10761473720632],
+  "Labas": [14.307775632796462, 121.10983860765154],
+  "Macabling": [14.300437657033717, 121.09874086248247],
+  "Malitlit": [14.269554848891717, 121.11103866162414],
+  "Malusak": [14.308738806283637, 121.1100518625647],
+  "Market Area": [14.31930947044648, 121.11206199783588],
+  "Pooc": [14.300886387511014, 121.11185033098216],
+  "Pulong Santa Cruz": [14.277419422192516, 121.08197606230414],
+  "Santo Domingo": [14.228257428044847, 121.04807642172844],
+  "Sinalhan": [14.33112133732167, 121.11154140765628],
+  "Tagapo": [14.31941890986217, 121.10300068435367]
+};
 
   useEffect(() => {
     fetchData();
@@ -180,64 +195,6 @@ export default function AnimalMovement() {
     if (stats.critical > 0) return '#ef4444'; 
     if (stats.mild > 0) return '#f97316';     
     return '#10b981';                         
-  };
-
-  const mapStyle = (feature) => {
-    const brgyName = feature.properties.NAME_3;
-    const stats = barangayMapStats[brgyName] || { mild: 0, critical: 0 };
-    return {
-      fillColor: getColor(stats),
-      weight: 1.5,
-      opacity: 1,
-      color: 'white',
-      fillOpacity: 0.7
-    };
-  };
-
-  const onEachBarangay = (feature, layer) => {
-    const brgyName = feature.properties.NAME_3;
-    
-    layer.on({
-      mouseover: (e) => {
-        const l = e.target;
-        l.setStyle({ weight: 3, color: '#6366f1', fillOpacity: 0.85 });
-        
-        const currentStats = barangayMapStats[brgyName] || { total: 0, healthy: 0, mild: 0, critical: 0, unverified: 0 };
-        
-        l.setTooltipContent(`
-          <div style="font-family: sans-serif; padding: 8px; min-width: 160px;">
-            <strong style="text-transform: uppercase; border-bottom: 1px solid #eee; display: block; margin-bottom: 5px; font-size: 13px;">
-              Brgy ${brgyName}
-            </strong>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
-              <span style="color: #64748b; font-weight: bold;">HEALTHY:</span> 
-              <span style="font-weight: 900; color: #059669;">${currentStats.healthy.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
-              <span style="color: #64748b; font-weight: bold;">MILD:</span> 
-              <span style="font-weight: 900; color: #f97316;">${currentStats.mild.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
-              <span style="color: #64748b; font-weight: bold;">CRITICAL:</span> 
-              <span style="font-weight: 900; color: #dc2626;">${currentStats.critical.toLocaleString()}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-              <span style="color: #64748b; font-weight: bold;">UNVERIFIED:</span> 
-              <span style="font-weight: 900; color: #d97706;">${currentStats.unverified.toLocaleString()}</span>
-            </div>
-            <div style="border-top: 1px solid #eee; padding-top: 4px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 900;">
-              <span>TOTAL:</span> <span>${currentStats.total.toLocaleString()}</span>
-            </div>
-          </div>
-        `);
-      },
-      mouseout: (e) => {
-        const l = e.target;
-        l.setStyle({ weight: 1.5, color: 'white', fillOpacity: 0.7 });
-      }
-    });
-
-    layer.bindTooltip("", { sticky: true, opacity: 0.95 });
   };
 
   if (loading) return (
@@ -423,7 +380,7 @@ export default function AnimalMovement() {
         <div className="flex-1 flex flex-col gap-6 sm:gap-8">
           <div className="group bg-white rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 shadow-xl p-6 sm:p-8 lg:p-10 flex flex-col flex-grow min-h-[500px] sm:min-h-[750px] relative z-0">
             <div className="mb-6 sm:mb-8 px-2">
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900">Livestock Geographic Heatmap</h2>
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900">Livestock Distribution Map</h2>
               <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mt-2">
                 Real-Time Health Monitoring
               </p>
@@ -437,41 +394,282 @@ export default function AnimalMovement() {
                 zoomControl={false}
                 style={{ height: "100%", width: "100%" }}
               >
-                {/* FIX COMPONENT ADDED HERE */}
+                {/* LEAFLET HEALTH LEGEND */}
+                <div
+                  className="
+                    absolute 
+                    top-4 
+                    left-4 
+                    bg-white/90 
+                    backdrop-blur-xl
+                    px-4 
+                    py-4
+                    rounded-3xl
+                    shadow-[0_8px_30px_rgba(0,0,0,0.12)]
+                    border border-white/70
+                    z-[1000]
+                    pointer-events-none
+                    min-w-[220px]
+                  "
+                >
+                  {/* Header */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></div>
+
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+                      Health Legend
+                    </p>
+                  </div>
+
+                  {/* Legend Items */}
+                  <div className="space-y-2.5">
+
+                    {/* Healthy */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 rounded-full bg-[#10b981] blur-[5px] opacity-40"></div>
+                          <div className="relative w-3.5 h-3.5 rounded-full bg-[#10b981] border border-white shadow-md"></div>
+                        </div>
+
+                        <span className="text-xs font-extrabold text-slate-700">
+                          Healthy
+                        </span>
+                      </div>
+
+                      <span className="text-[10px] font-bold text-slate-400">
+                        No Cases
+                      </span>
+                    </div>
+
+                    {/* Mild */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 rounded-full bg-[#f97316] blur-[5px] opacity-40"></div>
+                          <div className="relative w-3.5 h-3.5 rounded-full bg-[#f97316] border border-white shadow-md"></div>
+                        </div>
+
+                        <span className="text-xs font-extrabold text-slate-700">
+                          Warning
+                        </span>
+                      </div>
+
+                      <span className="text-[10px] font-bold text-slate-400">
+                        Mild Cases
+                      </span>
+                    </div>
+
+                    {/* Critical */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 rounded-full bg-[#ef4444] blur-[5px] opacity-40"></div>
+                          <div className="relative w-3.5 h-3.5 rounded-full bg-[#ef4444] border border-white shadow-md"></div>
+                        </div>
+
+                        <span className="text-xs font-extrabold text-slate-700">
+                          Critical
+                        </span>
+                      </div>
+
+                      <span className="text-[10px] font-bold text-slate-400">
+                        ASF / Flu / FMD
+                      </span>
+                    </div>
+                  </div>
+                </div>
                 <MapResizer />
 
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 
-                <GeoJSON 
-                  key={`geojson-${JSON.stringify(barangayMapStats)}`} 
-                  data={santaRosaData} 
-                  style={mapStyle} 
-                  onEachFeature={onEachBarangay} 
-                />
+                {/* REPLACED GEOJSON WITH PREMIUM MODERN COLOR-CODED PINS */}
+                {Object.entries(BARANGAY_COORDINATES).map(([brgyName, coords]) => {
+                  const currentStats = barangayMapStats[brgyName] || {
+                    total: 0,
+                    healthy: 0,
+                    mild: 0,
+                    critical: 0,
+                    unverified: 0,
+                  };
 
-                <ZoomControl position="bottomright" />
+                  const markerColor = getColor(currentStats);
 
-                <div className="absolute top-4 sm:top-6 left-4 sm:left-6 bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-2xl border border-white z-[1000] pointer-events-none max-w-[220px] sm:max-w-none">
-                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 sm:mb-3">Health Legend</p>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#10b981]"></div>
-                      <span className="text-xs font-black text-slate-700">No Cases (Healthy)</span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#f97316]"></div>
-                      <span className="text-xs font-black text-slate-700">Warning (Mild Cases)</span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#ef4444]"></div>
-                      <span className="text-xs font-black text-slate-700">Critical (ASF/Flu/FMD)</span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#d97706]"></div>
-                      <span className="text-xs font-black text-slate-700">Unverified (Pending)</span>
-                    </div>
-                  </div>
-                </div>
+                  // Premium glossy animated map pin
+                  const customIcon = L.divIcon({
+                    html: `
+                      <div style="
+                        position: relative;
+                        width: 52px;
+                        height: 52px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transform: translateY(-2px);
+                      ">
+
+                        <!-- Pulse Glow -->
+                        <div style="
+                          position: absolute;
+                          width: 26px;
+                          height: 26px;
+                          background: ${markerColor};
+                          border-radius: 999px;
+                          opacity: 0.25;
+                          filter: blur(8px);
+                          animation: pulseMarker 2s infinite;
+                        "></div>
+
+                        <!-- Main Pin -->
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 64 64"
+                          style="
+                            width: 52px;
+                            height: 52px;
+                            overflow: visible;
+                            filter:
+                              drop-shadow(0px 5px 8px rgba(0,0,0,0.35))
+                              drop-shadow(0px 1px 2px rgba(255,255,255,0.25));
+                          "
+                        >
+
+                          <!-- Pin Shape -->
+                          <path
+                            d="M32 2C20.4 2 11 11.4 11 23c0 15.4 18.2 34.8 20 36.7a1.5 1.5 0 002.1 0C34.8 57.8 53 38.4 53 23 53 11.4 43.6 2 32 2z"
+                            fill="${markerColor}"
+                            stroke="#ffffff"
+                            stroke-width="2.5"
+                          />
+
+                          <!-- Glossy Overlay -->
+                          <ellipse
+                            cx="26"
+                            cy="18"
+                            rx="12"
+                            ry="7"
+                            fill="rgba(255,255,255,0.35)"
+                            transform="rotate(-20 26 18)"
+                          />
+
+                          <!-- Inner White Ring -->
+                          <circle
+                            cx="32"
+                            cy="23"
+                            r="10"
+                            fill="#ffffff"
+                            opacity="0.98"
+                          />
+
+                          <!-- Core Status Dot -->
+                          <circle
+                            cx="32"
+                            cy="23"
+                            r="5"
+                            fill="${markerColor}"
+                          />
+
+                        </svg>
+                      </div>
+
+                      <style>
+                        @keyframes pulseMarker {
+                          0% {
+                            transform: scale(0.9);
+                            opacity: 0.35;
+                          }
+                          70% {
+                            transform: scale(1.8);
+                            opacity: 0;
+                          }
+                          100% {
+                            transform: scale(0.9);
+                            opacity: 0;
+                          }
+                        }
+                      </style>
+                    `,
+                    className: "custom-premium-pin",
+                    iconSize: [52, 52],
+                    iconAnchor: [26, 52],
+                    popupAnchor: [0, -45],
+                  });
+
+                  return (
+                    <Marker
+                      key={`marker-${brgyName}-${JSON.stringify(barangayMapStats)}`}
+                      position={coords}
+                      icon={customIcon}
+                    >
+                      <MapTooltip sticky opacity={0.96}>
+                        <div
+                          style={{
+                            fontFamily: "Inter, sans-serif",
+                            padding: "10px",
+                            minWidth: "170px",
+                          }}
+                        >
+                          <strong
+                            style={{
+                              textTransform: "uppercase",
+                              borderBottom: "1px solid #e5e7eb",
+                              display: "block",
+                              paddingBottom: "6px",
+                              marginBottom: "6px",
+                              fontSize: "13px",
+                              letterSpacing: "0.5px",
+                            }}
+                          >
+                            Brgy {brgyName}
+                          </strong>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "3px" }}>
+                            <span style={{ color: "#64748b", fontWeight: 700 }}>HEALTHY</span>
+                            <span style={{ fontWeight: 900, color: "#059669" }}>
+                              {currentStats.healthy.toLocaleString()}
+                            </span>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "3px" }}>
+                            <span style={{ color: "#64748b", fontWeight: 700 }}>MILD</span>
+                            <span style={{ fontWeight: 900, color: "#f97316" }}>
+                              {currentStats.mild.toLocaleString()}
+                            </span>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "3px" }}>
+                            <span style={{ color: "#64748b", fontWeight: 700 }}>CRITICAL</span>
+                            <span style={{ fontWeight: 900, color: "#dc2626" }}>
+                              {currentStats.critical.toLocaleString()}
+                            </span>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "5px" }}>
+                            <span style={{ color: "#64748b", fontWeight: 700 }}>UNVERIFIED</span>
+                            <span style={{ fontWeight: 900, color: "#d97706" }}>
+                              {currentStats.unverified.toLocaleString()}
+                            </span>
+                          </div>
+
+                          <div
+                            style={{
+                              borderTop: "1px solid #e5e7eb",
+                              paddingTop: "6px",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              fontSize: "12px",
+                              fontWeight: 900,
+                            }}
+                          >
+                            <span>TOTAL</span>
+                            <span>{currentStats.total.toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </MapTooltip>
+                    </Marker>
+                  );
+                  
+                })}
               </MapContainer>
             </div>
           </div>
