@@ -162,7 +162,7 @@ export default function DigitalPassport() {
             Digital Animal Passport
           </h1>
           <p style={styles.headerSubtitle}>
-            City of Santa Rosa, Laguna — Livestock Traceability System
+            ADTS Regional Hub — Livestock Traceability System
           </p>
           <div style={styles.headerBatchId}>
             {animal.batchId}

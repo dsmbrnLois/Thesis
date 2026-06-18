@@ -246,7 +246,7 @@ export default function AdminAnimalDB() {
             Livestock Database
           </h1>
           <p className="text-slate-500 font-medium mt-1">
-            Global health status of all registered assets in Santa Rosa.
+            Global health status of all registered assets in ADTS.
           </p>
         </div>
 

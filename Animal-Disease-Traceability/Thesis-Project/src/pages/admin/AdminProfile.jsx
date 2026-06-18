@@ -111,7 +111,7 @@ export default function AdminProfile() {
             ) : (
               <div className="bg-slate-50/50 rounded-3xl p-8 border border-slate-100 space-y-6">
                 <DisplayRow label="Direct Line" value={profile?.contactNumber || "—"} icon="📞" />
-                <DisplayRow label="Office Domain" value="City Hall, Santa Rosa" icon="🏢" />
+                <DisplayRow label="Office Domain" value="Regional Hub, ADTS" icon="🏢" />
                 <DisplayRow label="Auth Level" value="Root / Admin" icon="🔑" color="text-red-600" />
                 <DisplayRow label="Organization" value={profile?.mspId || "AdminMSP"} icon="🛡️" />
               </div>

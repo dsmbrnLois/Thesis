@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── ADTS Clinical Authority – Base Styles ── */
+
 html, body {
-  @apply scroll-smooth bg-[var(--white)];
+  @apply scroll-smooth bg-surface text-on-surface;
 }
 
 * {
@@ -13,6 +15,91 @@ html, body {
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  color: #333;
+  font-family: 'Inter', sans-serif;
+  color: #0d1d2b;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Material Symbols Configuration ── */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* ── Clinical Shadow ── */
+.clinical-shadow {
+  box-shadow: 0 2px 4px rgba(28, 43, 58, 0.08);
+}
+
+/* ── Zebra-striped Tables ── */
+.zebra-table tr:nth-child(even) {
+  background-color: #ffffff;
+}
+.zebra-table tr:nth-child(odd) {
+  background-color: #f7f9ff;
+}
+
+/* ── Status Badge ── */
+.status-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Pulsing Alert Animation ── */
+.status-pulse {
+  animation: pulse-red 2s infinite;
+}
+@keyframes pulse-red {
+  0%   { box-shadow: 0 0 0 0 rgba(186, 26, 26, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(186, 26, 26, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(186, 26, 26, 0); }
+}
+
+/* ── Clinical Grid Background (Admin) ── */
+.clinical-grid {
+  background-size: 20px 20px;
+  background-image: radial-gradient(circle, #D8E3ED 1px, transparent 1px);
+}
+
+/* ── Hero Overlay (Landing Page) ── */
+.hero-overlay {
+  background: linear-gradient(to bottom, rgba(0, 84, 96, 0.85), rgba(13, 29, 43, 0.95));
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #bec8cb;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6f797b;
+}
+
+/* ── Accessible Tap Target ── */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Selection Color ── */
+::selection {
+  background-color: #0a6e7c;
+  color: #9feefe;
 }

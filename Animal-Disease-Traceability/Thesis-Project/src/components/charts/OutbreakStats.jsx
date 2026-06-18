@@ -295,7 +295,7 @@ export default function OutbreakStats() {
                     <h2 className="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight leading-none">
                       {modalView === 'mild' ? 'Health Mapping' : 'Critical Surveillance'}
                     </h2>
-                    <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Santa Rosa City Records</p>
+                    <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">ADTS Regional Records</p>
                   </div>
                 </div>
                 <button onClick={() => setIsBrgyModalOpen(false)} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all font-bold text-xl">✕</button>
@@ -396,7 +396,7 @@ export default function OutbreakStats() {
         <div className="text-center mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 mb-4 sm:mb-6 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-slate-200">
             <span className="text-blue-600 text-lg sm:text-xl">🦠📊</span>
-            <span className="font-bold text-slate-800 uppercase tracking-widest text-xs sm:text-sm">Santa Rosa Veterinary Surveillance</span>
+            <span className="font-bold text-slate-800 uppercase tracking-widest text-xs sm:text-sm">ADTS Veterinary Surveillance</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-3 sm:mb-4 uppercase">Animal Outbreak Statistics Dashboard</h1>
           <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium px-2">

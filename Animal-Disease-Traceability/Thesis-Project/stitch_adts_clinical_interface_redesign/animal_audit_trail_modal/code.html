@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ADTS Portal - Batch Audit Trail</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#daeafe",
+                    "primary-container": "#0a6e7c",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005231",
+                    "surface-tint": "#006876",
+                    "on-tertiary-container": "#8ff6bb",
+                    "surface-bright": "#f7f9ff",
+                    "outline-variant": "#bec8cb",
+                    "on-secondary-container": "#3e5b80",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#233241",
+                    "surface-variant": "#d4e4f8",
+                    "on-background": "#0d1d2b",
+                    "on-secondary-fixed": "#001c38",
+                    "tertiary-fixed-dim": "#74daa1",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface": "#f7f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#ccdcf0",
+                    "surface-container-highest": "#d4e4f8",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#edf4ff",
+                    "primary": "#005460",
+                    "secondary-fixed": "#d3e4ff",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#a0efff",
+                    "on-surface-variant": "#3f484b",
+                    "outline": "#6f797b",
+                    "on-primary-container": "#9feefe",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#84d2e2",
+                    "tertiary": "#005835",
+                    "on-surface": "#0d1d2b",
+                    "inverse-on-surface": "#e8f1ff",
+                    "on-tertiary-fixed": "#002111",
+                    "tertiary-container": "#007347",
+                    "inverse-primary": "#84d2e2",
+                    "on-primary-fixed": "#001f25",
+                    "secondary": "#436085",
+                    "secondary-fixed-dim": "#abc9f3",
+                    "surface-container": "#e3efff",
+                    "tertiary-fixed": "#90f7bc",
+                    "secondary-container": "#b6d4ff",
+                    "on-secondary-fixed-variant": "#2a486c",
+                    "on-primary-fixed-variant": "#004e59",
+                    "background": "#f7f9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "base": "4px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "sidebar-width": "240px",
+                    "lg": "24px",
+                    "grid-columns": "12",
+                    "xs": "8px",
+                    "margin-page": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["DM Sans"],
+                    "display-lg": ["DM Sans"],
+                    "body-md": ["Inter"],
+                    "data-mono": ["JetBrains Mono"],
+                    "label-caps": ["JetBrains Mono"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bec8cb; border-radius: 10px; }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(to bottom, #bec8cb 0, #bec8cb 4px, transparent 4px, transparent 8px);
+        }
+        .modal-blur {
+            backdrop-filter: blur(4px);
+            background-color: rgba(13, 29, 43, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-hidden">
+<!-- Sidebar (Standard) -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-surface border-r border-outline-variant flex flex-col z-10">
+<div class="p-lg">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">ADTS Portal</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Veterinary Oversight</p>
+</div>
+<nav class="flex-1 overflow-y-auto px-base">
+<!-- Active: Dashboard -->
+<a class="border-l-4 border-primary bg-surface-container-high text-primary font-bold px-4 py-3 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="pets">pets</span>
+<span class="font-body-md">Livestock Records</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+<span class="font-body-md">Health Reports</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-body-md">Traceability Map</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="font-body-md">Laboratory Results</span>
+</a>
+</nav>
+<div class="p-md mt-auto border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="font-label-caps">New Outbreak Report</span>
+</button>
+</div>
+<div class="px-base py-md">
+<a class="text-on-surface-variant px-4 py-2 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="text-on-surface-variant px-4 py-2 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width min-h-screen p-xl flex flex-col gap-xl">
+<header class="flex justify-between items-end">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary">Operational Dashboard</h2>
+<p class="text-on-surface-variant">Active veterinary oversight for District 04</p>
+</div>
+<div class="flex gap-md">
+<div class="bg-surface border border-outline-variant p-md rounded-lg flex items-center gap-md">
+<span class="material-symbols-outlined text-primary" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div>
+<p class="font-label-caps text-label-caps">System Status</p>
+<p class="font-headline-md text-headline-md text-tertiary">Operational</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Dummy Content Behind Modal -->
+<div class="grid grid-cols-12 gap-lg opacity-30 pointer-events-none">
+<div class="col-span-8 bg-surface border border-outline-variant rounded-xl p-lg h-96 flex flex-col">
+<div class="flex justify-between border-b border-outline-variant pb-md mb-md">
+<span class="font-headline-md">Active Herd Monitor</span>
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-lg"></div>
+</div>
+<div class="col-span-4 bg-surface border border-outline-variant rounded-xl p-lg h-96">
+<div class="flex justify-between border-b border-outline-variant pb-md mb-md">
+<span class="font-headline-md">Alert Queue</span>
+</div>
+<div class="space-y-md">
+<div class="h-12 bg-error-container rounded-lg opacity-50"></div>
+<div class="h-12 bg-surface-container-high rounded-lg"></div>
+<div class="h-12 bg-surface-container-high rounded-lg"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Audit Trail Modal Backdrop -->
+<div class="fixed inset-0 modal-blur z-20 flex items-center justify-center p-md">
+<!-- Modal Window -->
+<div class="bg-surface border border-outline-variant shadow-2xl rounded-xl w-full max-w-2xl max-h-[921px] flex flex-col overflow-hidden relative">
+<!-- Modal Header -->
+<div class="p-lg bg-surface-container border-b border-outline-variant flex justify-between items-start">
+<div>
+<h3 class="font-display-lg text-display-lg text-on-surface tracking-tight">Batch Audit Trail</h3>
+<div class="flex items-center gap-xs mt-1">
+<span class="font-label-caps text-primary bg-primary-container/20 px-2 py-0.5 rounded text-[10px]">VERIFIED ASSET</span>
+<code class="font-data-mono text-data-mono text-on-surface-variant">#B-4920-X1</code>
+</div>
+</div>
+<button class="text-outline hover:text-on-surface transition-colors p-1">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Modal Content - Timeline -->
+<div class="flex-1 overflow-y-auto p-lg custom-scrollbar space-y-0 relative">
+<!-- Timeline Event: Movement -->
+<div class="relative pl-12 pb-10 timeline-line">
+<div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center z-10 border-4 border-surface">
+<span class="material-symbols-outlined text-on-secondary-container text-[20px]" data-icon="local_shipping">local_shipping</span>
+</div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-headline-md text-headline-md">Movement Recorded</span>
+<time class="font-label-caps text-label-caps text-on-surface-variant">Oct 24, 2023 • 14:22</time>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-md">
+<div class="grid grid-cols-2 gap-md text-body-md mb-md">
+<div>
+<p class="font-label-caps text-[10px] text-outline uppercase mb-1">Origin</p>
+<p class="font-body-md font-bold">Quarantine Zone 04</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-outline uppercase mb-1">Destination</p>
+<p class="font-body-md font-bold">Regional Processing Center</p>
+</div>
+</div>
+<div class="flex items-center gap-xs text-tertiary border-t border-outline-variant/30 pt-xs mt-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="hub">hub</span>
+<span class="font-data-mono text-data-mono text-[11px] truncate">SHA256: 8f9a2b...4e1c90</span>
+</div>
+</div>
+</div>
+<!-- Timeline Event: Vaccination -->
+<div class="relative pl-12 pb-10 timeline-line">
+<div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center z-10 border-4 border-surface">
+<span class="material-symbols-outlined text-on-tertiary-container text-[20px]" data-icon="vaccines">vaccines</span>
+</div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-headline-md text-headline-md text-tertiary">Vaccination Protocol Applied</span>
+<time class="font-label-caps text-label-caps text-on-surface-variant">Oct 20, 2023 • 09:15</time>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-md">
+<div class="mb-md">
+<p class="font-label-caps text-[10px] text-outline uppercase mb-1">Biological Asset</p>
+<p class="font-body-md font-bold">FMD-Vax Gen IV (Batch #992)</p>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-dim border border-outline-variant" data-alt="A clinical close-up photo of a professional laboratory technician in a white coat and blue nitrile gloves, holding a small medical vial against a bright, sterile background. The lighting is high-key and surgical, emphasizing a clean and institutional medical environment with cool blue tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAezUPxSSgmFj4x7I2bxt1XOpdL7dthpGiJCRRHVYpTqp3VZkHUr-x1LNXJ25LdYA--1EvKPq2ibkGis60btSfIYgmM-Fj3qhHeyibMO0Ssf_oJrLmlpdEuqv6QbJ4sclTraQcgUSxIP7WDpymNZDXChOcYU1Q32rzx1ZTgPJHOLkwX28goL5bKfLVCY6ftkdXkCpsgBuM1aPbtxKW6i5sp4nXVC3rVRg52Fo64jvGWph8uofn-fxyMgNLSDdIiq_tZutg7-kpOfwY')"></div>
+<span class="font-body-md text-on-surface-variant">Dr. Sarah Jenkins (VET-94)</span>
+</div>
+<span class="material-symbols-outlined text-tertiary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex items-center gap-xs text-tertiary border-t border-outline-variant/30 pt-xs mt-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="hub">hub</span>
+<span class="font-data-mono text-data-mono text-[11px] truncate">SHA256: d41d8c...e29b15</span>
+</div>
+</div>
+</div>
+<!-- Timeline Event: Health Clearance -->
+<div class="relative pl-12 pb-6">
+<div class="absolute left-0 top-0 w-10 h-10 rounded-full bg-primary-container flex items-center justify-center z-10 border-4 border-surface">
+<span class="material-symbols-outlined text-on-primary-container text-[20px]" data-icon="verified">verified</span>
+</div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-headline-md text-headline-md text-primary">Sanitary Clearance Issued</span>
+<time class="font-label-caps text-label-caps text-on-surface-variant">Oct 18, 2023 • 16:40</time>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-md">
+<p class="font-body-md text-on-surface mb-2 italic">"Asset shows zero clinical signs of prioritized diseases. Respiratory and thermal benchmarks within normal operational ranges."</p>
+<div class="flex items-center gap-xs text-primary border-t border-outline-variant/30 pt-xs mt-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="hub">hub</span>
+<span class="font-data-mono text-data-mono text-[11px] truncate">SHA256: 098f6b...e5d1b2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-lg bg-surface border-t border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></div>
+<span class="font-label-caps text-on-surface-variant text-[10px]">REAL-TIME SYNC ACTIVE</span>
+</div>
+<div class="flex gap-md">
+<button class="px-lg py-2 border border-outline-variant font-label-caps rounded hover:bg-surface-container transition-colors">Export Report</button>
+<button class="px-lg py-2 bg-primary text-on-primary font-label-caps rounded hover:opacity-90 transition-all shadow-sm">Verify Chain</button>
+</div>
+</div>
+<!-- Floating Decoration Element -->
+<div class="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalItems = document.querySelectorAll('.timeline-line');
+            modalItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s ease-out';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Close modal simulation
+            const closeBtn = document.querySelector('[data-icon="close"]').parentElement;
+            closeBtn.addEventListener('click', () => {
+                document.querySelector('.modal-blur').style.opacity = '0';
+                document.querySelector('.modal-blur').style.pointerEvents = 'none';
+                setTimeout(() => {
+                    document.querySelector('.modal-blur').style.display = 'none';
+                }, 300);
+            });
+        });
+    </script>
+</body></html>

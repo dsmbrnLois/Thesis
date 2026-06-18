@@ -228,7 +228,7 @@ export default function AdminAnalytics() {
           <div className="text-center md:text-left">
             <h1 className="text-xs font-black text-red-600 uppercase tracking-[0.4em] mb-2">Admin Surveillance</h1>
             <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter uppercase">
-              Santa Rosa Animal Health Report Analysis
+              ADTS Animal Health Report Analysis
             </h2>
           </div>
           

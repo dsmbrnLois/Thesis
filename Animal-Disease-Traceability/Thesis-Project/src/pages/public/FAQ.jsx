@@ -4,7 +4,7 @@ export default function FAQ() {
   const faqs = [
     {
       question: "What is Hyperledger Fabric?",
-      answer: "Hyperledger Fabric is a 'permissioned' blockchain framework. Unlike public cryptocurrencies, it is a private system. In Santa Rosa, only authorized personnel—like the City Veterinarian and Barangay Health Officers—can record or verify data, ensuring that every record is backed by an official signature."
+      answer: "Hyperledger Fabric is a 'permissioned' blockchain framework. Unlike public cryptocurrencies, it is a private system. In the ADTS network, only authorized personnel—like the City Veterinarian and Barangay Health Officers—can record or verify data, ensuring that every record is backed by an official signature."
     },
     {
       question: "How does Blockchain help in Animal Traceability?",
@@ -15,7 +15,7 @@ export default function FAQ() {
       answer: "Standard databases can be edited or wiped. With Hyperledger, even a system administrator cannot secretly change a transaction once it is finalized. This builds absolute trust between our 18 barangays and the city government."
     },
     {
-      question: "Which animals are tracked in Santa Rosa?",
+      question: "Which animals are tracked in ADTS?",
       answer: "Our system currently monitors Hogs, Cows, Chickens, Carabaos, Goats, and Ducks. We track their movement from local farms to the City Slaughterhouse to ensure they are healthy before reaching the public market."
     },
     {
@@ -32,7 +32,7 @@ export default function FAQ() {
           Frequently Asked Questions
         </h1>
         <p className="text-slate-500 mb-12 font-semibold">
-          Learn more about the technology and livestock monitoring in Santa Rosa City.
+          Learn more about the technology and livestock monitoring in the ADTS network.
         </p>
 
         <div className="space-y-6">

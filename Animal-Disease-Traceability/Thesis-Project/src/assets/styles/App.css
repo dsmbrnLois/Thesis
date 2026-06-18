@@ -1,13 +1,15 @@
+/* ── ADTS Clinical Authority – App Shell ── */
+
 #root {
   max-width: none;
   margin: 0 auto;
   padding: 0;
-  text-align: center;
 }
 
+/* Legacy CSS variables (kept for backward compat during migration) */
 :root {
-  --green: #15803D;
-  --light-green: #86EFAC;
-  --gray: #D1D5DB;
-  --white: #FFFFFF;
+  --green: #005460;
+  --light-green: #84d2e2;
+  --gray: #bec8cb;
+  --white: #f7f9ff;
 }

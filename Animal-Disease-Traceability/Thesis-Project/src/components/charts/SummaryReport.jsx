@@ -221,11 +221,11 @@ export default function SummaryReport() {
         <header className="text-center mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 mb-4 sm:mb-6 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-red-100">
             <span className="text-red-600 text-lg sm:text-xl">📉🦠</span>
-            <span className="font-bold text-slate-800 uppercase tracking-wider text-xs sm:text-sm">Santa Rosa Disease Intelligence</span>
+            <span className="font-bold text-slate-800 uppercase tracking-wider text-xs sm:text-sm">ADTS Disease Intelligence</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-3 sm:mb-4 uppercase">Diseases Summary Report</h1>
           <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium px-2">
-            Multi-severity epidemiological overview across Santa Rosa City
+            Multi-severity epidemiological overview across ADTS
           </p>
         </header>
 

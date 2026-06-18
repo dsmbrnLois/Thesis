@@ -140,7 +140,7 @@ export default function NetworkMonitor() {
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 pt-10">
         <div className="mb-12 text-center flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 text-center">
-            Santa Rosa Livestock <span className="text-emerald-600">Traceability Network</span>
+            ADTS Livestock <span className="text-emerald-600">Traceability Network</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto text-center font-medium">
             Visual representation of the blockchain architecture powering secure, transparent animal health records.

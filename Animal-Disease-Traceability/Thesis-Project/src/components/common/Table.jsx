@@ -248,7 +248,7 @@ export default function BarangayHealthTable() {
             Livestock Registry
           </h1>
           <p className="mt-2 text-slate-500 font-semibold text-lg">
-            Santa Rosa City Barangay Health Monitor
+            ADTS Barangay Health Monitor
           </p>
         </div>
         <button

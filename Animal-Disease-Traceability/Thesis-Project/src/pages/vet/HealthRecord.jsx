@@ -147,83 +147,84 @@ export default function HealthRecord() {
     return (
       <div className="flex justify-center items-center h-full pt-20">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-green-500/20 border-t-green-500 rounded-full animate-spin mb-4"></div>
-          <p className="font-bold text-green-600">Loading Database...</p>
+          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+          <p className="font-mono text-label-caps text-primary uppercase">Loading Database...</p>
         </div>
       </div>
     );
 
   return (
-    <div className="space-y-8 pb-10">
-      {/* HEADER */}
-      <div className="bg-white p-8 rounded-3xl shadow-sm border border-green-100 flex justify-between items-center">
+    <div className="space-y-md pb-10">
+      {/* ── HEADER ── */}
+      <div className="bg-surface p-xl border border-outline-variant flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-gray-800">
+          <h1 className="font-display text-display-sm text-primary uppercase tracking-tight">
             Livestock Health Registry
           </h1>
-          <p className="text-gray-500 font-medium mt-1">
+          <p className="font-body text-body-lg text-on-surface-variant mt-1">
             Monitoring logs, vaccinations, and disease status.
           </p>
         </div>
-        <div className="bg-green-50 p-4 rounded-2xl shadow-inner hidden sm:block">
-          <span className="text-4xl">🩺</span>
+        <div className="bg-surface-container-highest p-md hidden sm:block border border-outline-variant">
+          <span className="material-symbols-outlined text-[32px] text-primary">clinical_notes</span>
         </div>
       </div>
 
-      {/* SUMMARY CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-emerald-50 border-2 border-emerald-200 p-6 rounded-3xl text-center shadow-sm">
-          <p className="text-xs font-black uppercase text-emerald-600 tracking-widest opacity-80">
+      {/* ── SUMMARY TAPE ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-outline-variant bg-surface">
+        <div className="p-lg text-center border-b md:border-b-0 md:border-r border-outline-variant flex flex-col justify-center items-center bg-tertiary-fixed/10">
+          <p className="font-mono text-label-caps text-on-surface-variant uppercase tracking-widest mb-2">
             Verified Healthy
           </p>
-          <p className="text-5xl font-black text-emerald-700 mt-2">
+          <p className="font-display text-display-md text-tertiary">
             {farmerData.reduce((s, d) => s + d.verifiedHealthy, 0)}
           </p>
         </div>
-        <div className="bg-amber-50 border-2 border-amber-200 p-6 rounded-3xl text-center shadow-sm">
-          <p className="text-xs font-black uppercase text-amber-600 tracking-widest opacity-80">
+        <div className="p-lg text-center border-b md:border-b-0 md:border-r border-outline-variant flex flex-col justify-center items-center bg-surface-container-low">
+          <p className="font-mono text-label-caps text-on-surface-variant uppercase tracking-widest mb-2">
             Unverified
           </p>
-          <p className="text-5xl font-black text-amber-700 mt-2">
+          <p className="font-display text-display-md text-on-surface">
             {farmerData.reduce((s, d) => s + d.unverified, 0)}
           </p>
         </div>
-        <div className="bg-red-50 border-2 border-red-200 p-6 rounded-3xl text-center shadow-sm">
-          <p className="text-xs font-black uppercase text-red-600 tracking-widest opacity-80">
+        <div className="p-lg text-center flex flex-col justify-center items-center bg-error-container/20">
+          <p className="font-mono text-label-caps text-error uppercase tracking-widest mb-2 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[16px]">warning</span>
             Confirmed Sick
           </p>
-          <p className="text-5xl font-black text-red-700 mt-2">
+          <p className="font-display text-display-md text-error">
             {farmerData.reduce((s, d) => s + d.sick, 0)}
           </p>
         </div>
       </div>
 
-      {/* FARMER LIST TABLE SECTION */}
-      <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden flex flex-col">
-        {/* DATA TOOLBAR */}
-        <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex flex-col lg:flex-row justify-between gap-4 items-center">
+      {/* ── DATA TABLE SECTION ── */}
+      <div className="bg-surface border border-outline-variant flex flex-col">
+        {/* TOOLBAR */}
+        <div className="p-md border-b border-outline-variant bg-surface-container-lowest flex flex-col lg:flex-row justify-between gap-md items-center">
           {/* SEARCH */}
           <div className="relative w-full lg:w-96">
-            <span className="absolute left-4 top-3 text-gray-400">🔍</span>
+            <span className="absolute left-3 top-2.5 text-on-surface-variant material-symbols-outlined text-[20px]">search</span>
             <input
               type="text"
               placeholder="Search Farmer or Barangay..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-medium text-sm shadow-sm transition-all"
+              className="w-full pl-10 pr-4 py-2 bg-surface border border-outline-variant text-on-surface font-body text-body-md outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors uppercase placeholder:normal-case placeholder:font-mono placeholder:text-label-caps"
             />
           </div>
 
           {/* FILTERS & SORT */}
-          <div className="flex gap-3 w-full lg:w-auto">
+          <div className="flex gap-sm w-full lg:w-auto">
             <select
               value={filterBarangay}
               onChange={(e) => setFilterBarangay(e.target.value)}
-              className="flex-1 lg:w-48 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-medium text-sm shadow-sm cursor-pointer"
+              className="flex-1 lg:w-48 bg-surface border border-outline-variant text-on-surface font-mono text-label-caps py-2 px-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer uppercase"
             >
               {uniqueBarangays.map((b) => (
                 <option key={b} value={b}>
-                  {b === "All" ? "All Barangays" : b}
+                  {b === "All" ? "ALL BARANGAYS" : b}
                 </option>
               ))}
             </select>
@@ -231,11 +232,11 @@ export default function HealthRecord() {
             <select
               value={sortConfig}
               onChange={(e) => setSortConfig(e.target.value)}
-              className="flex-1 lg:w-56 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-medium text-sm shadow-sm cursor-pointer"
+              className="flex-1 lg:w-56 bg-surface border border-outline-variant text-on-surface font-mono text-label-caps py-2 px-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer uppercase"
             >
-              <option value="sick-desc">Sort: Most Sick First</option>
-              <option value="total-desc">Sort: Total Inventory</option>
-              <option value="name-asc">Sort: Name (A-Z)</option>
+              <option value="sick-desc">SORT: MOST SICK FIRST</option>
+              <option value="total-desc">SORT: TOTAL INVENTORY</option>
+              <option value="name-asc">SORT: NAME (A-Z)</option>
             </select>
           </div>
         </div>
@@ -244,36 +245,36 @@ export default function HealthRecord() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-green-600 text-white">
-                <th className="p-5 pl-8 text-xs font-bold uppercase tracking-wider">
-                  Farmer Name
+              <tr className="bg-surface-container border-b border-outline-variant">
+                <th className="p-md pl-lg font-mono text-label-caps text-on-surface uppercase tracking-wider">
+                  FARMER NAME
                 </th>
-                <th className="p-5 text-xs font-bold uppercase tracking-wider">
-                  Barangay
+                <th className="p-md font-mono text-label-caps text-on-surface uppercase tracking-wider">
+                  BARANGAY
                 </th>
-                <th className="p-5 text-center text-xs font-bold uppercase tracking-wider bg-green-700/30">
-                  Healthy
+                <th className="p-md text-center font-mono text-label-caps text-on-surface uppercase tracking-wider">
+                  HEALTHY
                 </th>
-                <th className="p-5 text-center text-xs font-bold uppercase tracking-wider bg-amber-600/20">
-                  Unverified
+                <th className="p-md text-center font-mono text-label-caps text-on-surface uppercase tracking-wider">
+                  UNVERIFIED
                 </th>
-                <th className="p-5 text-center text-xs font-bold uppercase tracking-wider bg-red-700/30">
-                  Sick
+                <th className="p-md text-center font-mono text-label-caps text-on-surface uppercase tracking-wider">
+                  SICK
                 </th>
-                <th className="p-5 text-center text-xs font-bold uppercase tracking-wider">
-                  Action
+                <th className="p-md text-center font-mono text-label-caps text-on-surface uppercase tracking-wider">
+                  ACTION
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-outline-variant">
               {processedData.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="p-16 text-center">
-                    <div className="text-4xl mb-3 opacity-50">📂</div>
-                    <p className="text-gray-500 font-bold text-lg">
+                  <td colSpan="6" className="p-xl text-center bg-surface-container-lowest">
+                    <span className="material-symbols-outlined text-[48px] text-outline mb-2">folder_open</span>
+                    <p className="font-mono text-label-caps text-on-surface-variant uppercase">
                       No records found
                     </p>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="font-body text-body-sm text-outline mt-1">
                       Try adjusting your search or filters.
                     </p>
                   </td>
@@ -282,31 +283,38 @@ export default function HealthRecord() {
                 processedData.map((data, idx) => (
                   <tr
                     key={idx}
-                    className="hover:bg-green-50/40 transition-colors group"
+                    className="bg-surface hover:bg-surface-container-low transition-colors group"
                   >
-                    <td className="p-5 pl-8 font-black text-gray-700 group-hover:text-green-700 transition-colors">
+                    <td className="p-md pl-lg font-body text-body-lg font-bold text-on-surface group-hover:text-primary transition-colors">
                       {data.farmer}
                     </td>
-                    <td className="p-5 text-gray-500 font-medium">
+                    <td className="p-md font-mono text-label-caps text-on-surface-variant uppercase">
                       {data.barangay}
                     </td>
-                    <td className="p-5 text-center font-black text-emerald-600 bg-emerald-50/30">
-                      {data.verifiedHealthy || "-"}
+                    <td className="p-md text-center">
+                      <span className="font-mono text-data-mono text-tertiary font-bold bg-tertiary-fixed/30 px-2 py-0.5 rounded-sm">
+                        {data.verifiedHealthy || "-"}
+                      </span>
                     </td>
-                    <td className="p-5 text-center font-black text-amber-600 bg-amber-50/30">
-                      {data.unverified || "-"}
+                    <td className="p-md text-center">
+                      <span className="font-mono text-data-mono text-on-surface-variant font-bold bg-surface-container-highest px-2 py-0.5 rounded-sm">
+                        {data.unverified || "-"}
+                      </span>
                     </td>
-                    <td className="p-5 text-center font-black text-red-600 bg-red-50/30">
-                      {data.sick || "-"}
+                    <td className="p-md text-center">
+                      <span className="font-mono text-data-mono text-error font-bold bg-error-container/50 px-2 py-0.5 rounded-sm">
+                        {data.sick || "-"}
+                      </span>
                     </td>
-                    <td className="p-5 text-center pr-8">
+                    <td className="p-md text-center pr-lg">
                       <button
                         onClick={() =>
                           viewFarmerAnimals(data.farmer, data.barangay)
                         }
-                        className="bg-green-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-green-700 hover:shadow-md transition-all active:scale-95"
+                        className="bg-surface-container-high border border-outline-variant text-on-surface px-md py-xs font-mono text-label-caps uppercase hover:bg-surface-container-highest hover:text-primary transition-all flex items-center gap-2 mx-auto"
                       >
-                        View Batches
+                        <span className="material-symbols-outlined text-[14px]">visibility</span>
+                        VIEW BATCHES
                       </button>
                     </td>
                   </tr>
@@ -319,78 +327,81 @@ export default function HealthRecord() {
 
       {/* === LEVEL 1 MODAL: FARMER'S ANIMALS === */}
       {showAnimalListModal && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-          <div className="bg-white rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
-            <div className="p-6 md:p-8 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
-              <div>
-                <h2 className="text-2xl font-black text-gray-800">
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-md" style={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+          <div className="bg-surface w-full max-w-3xl max-h-[85vh] flex flex-col shadow-[0_2px_4px_rgba(28,43,58,0.08)] border border-outline-variant relative">
+            <div className="px-lg py-md border-b border-outline-variant bg-surface flex justify-between items-center sticky top-0 z-10">
+              <div className="flex flex-col">
+                <h2 className="font-display text-headline-md text-primary uppercase tracking-tight">
                   Livestock Batches
                 </h2>
-                <p className="text-sm text-green-600 font-bold uppercase tracking-tight mt-1">
-                  {selectedFarmer?.farmer} — {selectedFarmer?.barangay}
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="font-mono text-label-caps bg-surface-container-highest px-2 py-0.5 text-on-surface-variant uppercase">
+                    FARMER / DOMAIN
+                  </span>
+                  <span className="font-mono text-data-mono text-primary font-bold">
+                    {selectedFarmer?.farmer} — {selectedFarmer?.barangay}
+                  </span>
+                </div>
               </div>
               <button
                 onClick={() => setShowAnimalListModal(false)}
-                className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors font-bold"
+                className="flex items-center justify-center w-10 h-10 hover:bg-error-container hover:text-error transition-colors text-outline"
               >
-                ✕
+                <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
-            <div className="p-6 md:p-8 overflow-y-auto space-y-4 bg-gray-50/50">
+            <div className="p-lg overflow-y-auto space-y-md bg-surface-container-lowest" style={{ scrollbarWidth: 'thin', scrollbarColor: '#bec8cb #f7f9ff' }}>
               {farmerAnimals.map((animal, i) => (
                 <div
                   key={i}
-                  className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-green-300 hover:shadow-md transition-all"
+                  className="bg-surface-container-low p-md border border-outline-variant hover:border-primary transition-all"
                 >
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-md">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xl font-black text-gray-800 capitalize">
+                        <span className="font-body text-body-lg font-bold text-on-surface capitalize">
                           {animal.species}
                         </span>
-                        <span className="bg-slate-100 text-slate-500 text-[10px] px-2 py-1 rounded-md font-mono border border-slate-200">
+                        <span className="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 font-mono uppercase tracking-wider">
                           {animal.batchId || "LEGACY"}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500">
-                        Qty:{" "}
-                        <span className="font-bold text-gray-800">
-                          {animal.quantity}
-                        </span>
+                      <p className="font-mono text-label-caps text-on-surface-variant uppercase">
+                        Qty: <span className="font-bold text-on-surface">{animal.quantity}</span>
                       </p>
                     </div>
 
                     {/* Status Badge */}
                     <span
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${
+                      className={`inline-block font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm tracking-wider ${
                         animal.severity === "safe"
-                          ? "bg-emerald-100 text-emerald-700"
+                          ? "bg-tertiary-fixed text-on-tertiary-fixed-variant"
                           : animal.severity === "mild" ||
                               animal.severity === "dangerous"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-amber-100 text-amber-700"
+                            ? "bg-error-container text-on-error-container"
+                            : "bg-surface-container-highest text-on-surface-variant"
                       }`}
                     >
                       {animal.severity === "safe"
-                        ? "Verified Healthy"
+                        ? "VERIFIED HEALTHY"
                         : animal.severity === "mild" ||
                             animal.severity === "dangerous"
-                          ? "Sick / Flagged"
-                          : "Unverified"}
+                          ? "SICK / FLAGGED"
+                          : "UNVERIFIED"}
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-2">
-                    <p className="text-xs text-gray-400 font-medium">
-                      Registered: {formatDate(animal.timestamp)}
+                  <div className="flex justify-between items-center pt-md border-t border-outline-variant mt-xs">
+                    <p className="font-mono text-label-caps text-on-surface-variant uppercase">
+                      Registered: <span className="font-mono text-data-mono text-on-surface">{formatDate(animal.timestamp)}</span>
                     </p>
                     <button
                       onClick={() => viewMedicalLog(animal)}
-                      className="flex items-center gap-2 text-blue-600 bg-blue-50 px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors"
+                      className="flex items-center gap-2 text-on-primary bg-primary px-lg py-xs font-mono text-label-caps uppercase hover:brightness-110 transition-colors"
                     >
-                      📄 View Medical Log
+                      <span className="material-symbols-outlined text-[14px]">clinical_notes</span>
+                      View Medical Log
                     </button>
                   </div>
                 </div>

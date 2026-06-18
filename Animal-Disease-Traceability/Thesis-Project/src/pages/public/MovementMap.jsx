@@ -295,7 +295,7 @@ export default function AnimalMovement() {
           h-fit flex flex-col transition-all z-20
         ">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-2">Animal Movement</h1>
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-green-600">Santa Rosa City • Real-Time Traceability</p>
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-green-600">ADTS • Real-Time Traceability</p>
 
           <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-8 sm:mt-10">
             <div className="bg-emerald-50 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-emerald-100 text-center">

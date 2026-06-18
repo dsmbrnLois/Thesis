@@ -2,14 +2,6 @@ import React from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "../../assets/styles/App.css";
 
-// Icons
-const DashboardIcon = () => <span>📊</span>;
-const ReportsIcon = () => <span>📄</span>;
-const UsersIcon = () => <span>👥</span>;
-const ExitIcon = () => <span>📤</span>;
-const LogoutIcon = () => <span>🚪</span>;
-const ProfileIcon = () => <span>👤</span>;
-
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,106 +11,108 @@ export default function AdminLayout() {
     navigate("/adminlogin");
   };
 
-  /**
-   * REFINED HOVER LOGIC:
-   * Active: White background with green text.
-   * Hover: Subtle transparent white overlay (white/10).
-   */
   const isActive = (path) =>
-    location.pathname === path || location.pathname.includes(path)
-      ? "bg-white text-[var(--green)] shadow-md"
-      : "text-white hover:bg-white/10 hover:shadow-sm";
+    location.pathname === path || location.pathname.includes(path);
 
-  /**
-   * TYPOGRAPHY ENHANCEMENT:
-   * font-bold and tracking-tight to match the VetLayout aesthetics.
-   */
-  const linkBaseClasses = 
-    "flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-200 font-bold text-base tracking-tight mx-3";
+  const navLinkClasses = (path) =>
+    `px-4 py-3 flex items-center gap-3 transition-colors font-body text-body-md ${
+      isActive(path)
+        ? "bg-[#1A2B3A] text-[#abc9f3] border-l-4 border-[#84d2e2]"
+        : "text-outline-variant hover:bg-[#1A2B3A] border-l-4 border-transparent"
+    }`;
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[var(--green)] text-white flex flex-col fixed h-full shadow-xl z-40">
-        
-        {/* Desktop Logo / Header with Santa Rosa City sub-header */}
-        <div className="p-8 border-b border-green-700/40">
-          <h1 className="text-2xl font-black tracking-tighter">Admin Portal</h1>
-          <p className="text-[var(--light-green)] text-xs font-bold uppercase tracking-[0.2em] mt-1 opacity-90">Santa Rosa City</p>
+    <div className="flex h-screen bg-background font-body overflow-hidden">
+      {/* ── Admin Dark Sidebar ── */}
+      <aside className="bg-[#0D1B2A] fixed left-0 top-0 h-screen w-sidebar border-r border-on-surface-variant flex flex-col overflow-y-auto z-50">
+        <div className="p-lg flex flex-col gap-1">
+          <h1 className="font-display text-headline-md font-bold text-secondary-fixed">ADTS Admin</h1>
+          <p className="font-mono text-label-caps text-outline-variant opacity-70">System Infrastructure</p>
         </div>
 
-        <nav className="flex-grow mt-5 space-y-2 overflow-y-auto">
-          <Link to="/admin/profile" className={`${linkBaseClasses} ${isActive("/admin/profile")}`}>
-            <span className="text-2xl">👤</span>
-            <span>My Profile</span>
+        <nav className="flex-1 mt-md">
+          <Link to="/admin/dashboard" className={navLinkClasses("/admin/dashboard")}>
+            <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+            <span>System Health</span>
           </Link>
-
-          <Link to="/admin/dashboard" className={`${linkBaseClasses} ${isActive("/admin/dashboard")}`}>
-            <DashboardIcon />
-            <span>Dashboard</span>
+          <Link to="/admin/user-management" className={navLinkClasses("/admin/user-management")}>
+            <span className="material-symbols-outlined text-[20px]">group</span>
+            <span>User Access</span>
           </Link>
-
-          <Link to="/admin/reports" className={`${linkBaseClasses} ${isActive("/admin/reports")}`}>
-            <ReportsIcon />
-            <span>Reports Analysis</span>
+          <Link to="/admin/reports" className={navLinkClasses("/admin/reports")}>
+            <span className="material-symbols-outlined text-[20px]">policy</span>
+            <span>Reports</span>
           </Link>
-
-          <Link to="/admin/user-management" className={`${linkBaseClasses} ${isActive("/admin/user-management")}`}>
-            <UsersIcon />
-            <span>User Management</span>
+          <Link to="/admin/transactions" className={navLinkClasses("/admin/transactions")}>
+            <span className="material-symbols-outlined text-[20px]">assignment</span>
+            <span>Global Logs</span>
           </Link>
-
-          <Link to="/admin/animal-db" className={`${linkBaseClasses} ${isActive("/admin/animal-db")}`}>
-            <span className="text-2xl">🗂️</span>
-            <span>Animal Database</span>
+          <Link to="/admin/animal-db" className={navLinkClasses("/admin/animal-db")}>
+            <span className="material-symbols-outlined text-[20px]">database</span>
+            <span>Database</span>
           </Link>
-
-          <Link to="/admin/transactions" className={`${linkBaseClasses} ${isActive("/admin/transactions")}`}>
-            <span className="text-2xl">📝</span>
-            <span>Transaction History</span>
+          <Link to="/admin/alert" className={navLinkClasses("/admin/alert")}>
+            <span className="material-symbols-outlined text-[20px]">notification_important</span>
+            <span>Alert System</span>
           </Link>
-
-          <Link to="/admin/exit-permits" className={`${linkBaseClasses} ${isActive("/admin/exit-permits")}`}>
-            <ExitIcon />
-            <span>Exit Verification</span>
-          </Link>
-
-          <Link to="/admin/alert" className={`${linkBaseClasses} ${isActive("/admin/alert")}`}>
-            <span className="text-2xl">🚨</span>
-            <span>Send Alert</span>
-          </Link>
-
-          <Link to="/admin/network" className={`${linkBaseClasses} ${isActive("/admin/network")}`}>
-            <span className="text-2xl">⛓️</span>
+          <Link to="/admin/network" className={navLinkClasses("/admin/network")}>
+            <span className="material-symbols-outlined text-[20px]">hub</span>
             <span>Network Visual</span>
+          </Link>
+          <Link to="/admin/exit-permits" className={navLinkClasses("/admin/exit-permits")}>
+            <span className="material-symbols-outlined text-[20px]">local_shipping</span>
+            <span>Exit Permits</span>
           </Link>
         </nav>
 
-        {/* FOOTER: Updated Sign Out UI */}
-        <div className="p-6 border-t border-green-700/40 bg-black/10">      
-          <button 
+        {/* Bottom Section */}
+        <div className="mt-auto border-t border-on-surface-variant/20 py-4">
+          <Link to="/admin/profile" className="px-4 py-2 flex items-center gap-3 mb-2 hover:bg-[#1A2B3A] transition-colors">
+            <div className="w-8 h-8 rounded bg-secondary-container flex items-center justify-center">
+              <span className="material-symbols-outlined text-on-secondary-container text-[18px]">person</span>
+            </div>
+            <div>
+              <p className="font-body text-body-md text-secondary-fixed leading-tight">Admin User</p>
+              <p className="font-mono text-[9px] text-outline-variant uppercase">Level 4 Clearance</p>
+            </div>
+          </Link>
+          <a href="#" className="text-outline-variant px-4 py-2 flex items-center gap-3 hover:bg-[#1A2B3A] transition-colors">
+            <span className="material-symbols-outlined text-[18px]">router</span>
+            <span className="font-mono text-label-caps">Network Status</span>
+          </a>
+          <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-3 bg-red-600/90 hover:bg-red-700 text-white py-3.5 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all shadow-md active:scale-95"
+            className="text-outline-variant px-4 py-2 flex items-center gap-3 hover:bg-[#1A2B3A] transition-colors w-full text-left"
           >
-            <span>Sign Out</span>
+            <span className="material-symbols-outlined text-[18px]">logout</span>
+            <span className="font-mono text-label-caps">Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col ml-64">
-        <header className="bg-white shadow-sm p-4 px-8 flex justify-between items-center z-10">
-          <h1 className="text-xl font-bold text-gray-800 tracking-tight">
-            Welcome, Admin
-          </h1>
+      {/* ── Main Content Area ── */}
+      <main className="ml-sidebar flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Header */}
+        <header className="h-16 border-b border-outline-variant flex items-center justify-between px-lg bg-surface-bright">
+          <h2 className="font-display text-headline-md text-primary">System Infrastructure Overview</h2>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant">
+              <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+              <span className="font-mono text-[10px] text-on-surface-variant uppercase">System Online</span>
+            </div>
+            <button className="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded">
+              <span className="material-symbols-outlined">refresh</span>
+            </button>
+          </div>
         </header>
 
-        <main className="flex-grow p-6 overflow-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-          <div className="max-w-7xl mx-auto">
+        {/* Dashboard Content */}
+        <div className="flex-1 overflow-y-auto p-lg clinical-grid">
+          <div className="max-w-screen-2xl mx-auto">
             <Outlet />
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

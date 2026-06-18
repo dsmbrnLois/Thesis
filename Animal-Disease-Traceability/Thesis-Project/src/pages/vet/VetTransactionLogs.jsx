@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import API_URL from "../../config/api";
 import TransactionLoadingOverlay from "../../components/common/TransactionLoadingOverlay";
+import MedicalLogModal from "../../components/common/MedicalLogModal";
 
 export default function VetTransactionLogs() {
   const [transactions, setTransactions] = useState([]);
@@ -15,21 +16,20 @@ export default function VetTransactionLogs() {
   const [sortConfig, setSortConfig] = useState("newest"); // 'newest' or 'oldest'
 
   // MODAL STATES
-  const [modalType, setModalType] = useState(null); // 'diagnose', 'update', 'healthLog'
+  const [modalType, setModalType] = useState(null); // 'diagnose', 'update'
   const [selectedTx, setSelectedTx] = useState(null);
+
+  // MEDICAL LOG MODAL STATES
+  const [showHealthModal, setShowHealthModal] = useState(false);
+  const [healthLogs, setHealthLogs] = useState([]);
+  const [healthLoading, setHealthLoading] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
 
   // FORM STATES
   const [diagnosisForm, setDiagnosisForm] = useState({
     severity: "safe",
     diseasePreset: "",
     customDisease: "",
-  });
-  const [healthLogForm, setHealthLogForm] = useState({
-    type: "Vaccination",
-    name: "",
-    notes: "",
-    nextDueDate: "",
-    proofFile: null,
   });
 
   useEffect(() => {
@@ -121,19 +121,31 @@ export default function VetTransactionLogs() {
       diseasePreset: isStandard ? existingDisease : "Other",
       customDisease: isStandard ? "" : existingDisease,
     });
-
-    setHealthLogForm({
-      type: "Vaccination",
-      name: "",
-      notes: "",
-      nextDueDate: "",
-      proofFile: null,
-    });
   };
 
   const closeModal = () => {
     setModalType(null);
     setSelectedTx(null);
+  };
+
+  const viewMedicalLog = async (tx) => {
+    setSelectedAnimal(tx);
+    setShowHealthModal(true);
+    setHealthLoading(true);
+
+    const lookupId = tx.batchId || tx._id;
+
+    try {
+      const res = await fetch(`${API_URL}/health-records/${lookupId}`);
+      if (!res.ok) throw new Error("Failed to load records");
+      const data = await res.json();
+      setHealthLogs(data || []);
+    } catch (err) {
+      console.error(err);
+      setHealthLogs([]);
+    } finally {
+      setHealthLoading(false);
+    }
   };
 
   const handleDiagnosisSubmit = async () => {
@@ -194,43 +206,6 @@ export default function VetTransactionLogs() {
           ? "Cull Order Issued Successfully!"
           : "Animal status updated successfully!",
       );
-    } catch (err) {
-      alert("Error: " + err.message);
-    } finally {
-      setTxLoading(false);
-    }
-  };
-
-  const handleHealthLogSubmit = async () => {
-    const storedUser = localStorage.getItem("user");
-    const currentUser = JSON.parse(storedUser);
-
-    setTxLoading(true);
-    setTxMessage("Saving medical record...");
-    try {
-      const formData = new FormData();
-      formData.append("batchId", selectedTx.batchId || selectedTx._id);
-      formData.append("type", healthLogForm.type);
-      formData.append("name", healthLogForm.name);
-      formData.append("notes", healthLogForm.notes);
-      formData.append("nextDueDate", healthLogForm.nextDueDate);
-      formData.append("vetUsername", currentUser.username);
-      formData.append("mspId", currentUser.mspId);
-      formData.append("status", "Valid");
-
-      if (healthLogForm.proofFile) {
-        formData.append("proofFile", healthLogForm.proofFile);
-      }
-
-      const res = await fetch(`${API_URL}/health-records`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Failed to save health record");
-
-      closeModal();
-      alert("Medical record added to digital log!");
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
@@ -448,9 +423,9 @@ export default function VetTransactionLogs() {
                               ) : (
                                 <>
                                   <button
-                                    onClick={() => openModal("healthLog", tx)}
+                                    onClick={() => viewMedicalLog(tx)}
                                     className="bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 px-3 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm"
-                                    title="Add Medical Record"
+                                    title="Manage Medical Records"
                                   >
                                     + Record
                                   </button>
@@ -478,30 +453,40 @@ export default function VetTransactionLogs() {
 
       {/* --- MODAL LOGIC --- */}
       {modalType && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
-            {/* HEADER */}
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h3 className="font-black text-xl text-slate-800">
-                {modalType === "diagnose" && "Initial Verification"}
-                {modalType === "update" && "Update Health Status"}
-                {modalType === "healthLog" && "Add Medical Record"}
-              </h3>
-              <button
-                onClick={closeModal}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-colors font-bold"
-              >
-                ✕
-              </button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-md" style={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+          <div className="bg-surface w-full max-w-lg max-h-[85vh] flex flex-col shadow-[0_2px_4px_rgba(28,43,58,0.08)] border border-outline-variant relative">
+            {/* ── HEADER ── */}
+            <div className="px-lg py-md border-b border-outline-variant bg-surface flex justify-between items-center">
+              <div className="flex flex-col">
+                <h1 className="font-display text-headline-md text-primary uppercase tracking-tight">
+                  {modalType === "diagnose" && "Initial Verification"}
+                  {modalType === "update" && "Update Health Status"}
+                </h1>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="font-mono text-label-caps bg-surface-container-highest px-2 py-0.5 text-on-surface-variant uppercase">
+                    SUBJECT ID
+                  </span>
+                  <span className="font-mono text-data-mono text-primary font-bold">
+                    {selectedTx?.batchId || selectedTx?._id || "—"}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-xs">
+                <button
+                  onClick={closeModal}
+                  className="flex items-center justify-center w-10 h-10 hover:bg-error-container hover:text-error transition-colors text-outline"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
             </div>
 
-            {/* BODY */}
-            <div className="p-6 bg-white overflow-y-auto max-h-[80vh]">
-              {/* 1. DIAGNOSIS / UPDATE FORM */}
+            {/* ── BODY ── */}
+            <div className="p-lg bg-surface-container-lowest overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: '#bec8cb #f7f9ff' }}>
               {(modalType === "diagnose" || modalType === "update") && (
-                <div className="space-y-5">
+                <div className="space-y-md">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                    <label className="block font-mono text-label-caps text-outline uppercase mb-2">
                       Status Verdict
                     </label>
                     <select
@@ -514,24 +499,20 @@ export default function VetTransactionLogs() {
                           customDisease: "",
                         })
                       }
-                      className="w-full border-2 border-slate-100 rounded-xl p-3.5 focus:border-emerald-500 outline-none font-bold text-slate-700 transition-colors"
+                      className="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body text-body-md p-3 rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                     >
                       <option value="safe">✅ Verified Healthy (Safe)</option>
                       <option value="mild">⚠️ Mild Illness (Quarantine)</option>
-                      <option value="dangerous">
-                        ⛔ Dangerous Disease (Cull/Isolate)
-                      </option>
+                      <option value="dangerous">⛔ Dangerous Disease (Cull/Isolate)</option>
                     </select>
                   </div>
 
                   {/* --- DYNAMIC DISEASE DROPDOWN --- */}
                   {diagnosisForm.severity !== "safe" && (
-                    <div className="space-y-4 bg-red-50/50 p-5 rounded-2xl border border-red-100">
+                    <div className="space-y-md bg-error-container/30 p-lg border border-error/20">
                       <div>
-                        <label className="block text-xs font-bold text-red-500 uppercase tracking-widest mb-2">
-                          {diagnosisForm.severity === "mild"
-                            ? "Condition Category"
-                            : "Select Disease"}
+                        <label className="block font-mono text-label-caps text-error uppercase mb-2">
+                          {diagnosisForm.severity === "mild" ? "Condition Category" : "Select Disease"}
                         </label>
                         <select
                           value={diagnosisForm.diseasePreset}
@@ -541,41 +522,23 @@ export default function VetTransactionLogs() {
                               diseasePreset: e.target.value,
                             })
                           }
-                          className="w-full border-2 border-red-200 rounded-xl p-3.5 text-red-700 bg-white focus:border-red-500 outline-none font-bold transition-colors"
+                          className="w-full bg-surface-container-lowest border border-error/30 text-error font-body text-body-md p-3 rounded outline-none focus:border-error focus:ring-1 focus:ring-error transition-colors"
                         >
-                          <option value="" disabled>
-                            -- Select an Option --
-                          </option>
+                          <option value="" disabled>-- Select an Option --</option>
                           {diagnosisForm.severity === "mild" && (
                             <>
-                              <option value="Respiratory Infection">
-                                Respiratory Infection
-                              </option>
-                              <option value="Parasitic Infection">
-                                Parasitic Infection (Worms/Ticks)
-                              </option>
-                              <option value="Digestive Issue / Scours">
-                                Digestive Issue / Scours
-                              </option>
-                              <option value="Skin Condition / Mange">
-                                Skin Condition / Mange
-                              </option>
-                              <option value="Physical Injury / Lameness">
-                                Physical Injury / Lameness
-                              </option>
+                              <option value="Respiratory Infection">Respiratory Infection</option>
+                              <option value="Parasitic Infection">Parasitic Infection (Worms/Ticks)</option>
+                              <option value="Digestive Issue / Scours">Digestive Issue / Scours</option>
+                              <option value="Skin Condition / Mange">Skin Condition / Mange</option>
+                              <option value="Physical Injury / Lameness">Physical Injury / Lameness</option>
                             </>
                           )}
                           {diagnosisForm.severity === "dangerous" && (
                             <>
-                              <option value="African Swine Fever (ASF)">
-                                African Swine Fever (ASF)
-                              </option>
-                              <option value="Avian Influenza">
-                                Avian Influenza (Bird Flu)
-                              </option>
-                              <option value="Foot and Mouth Disease (FMD)">
-                                Foot and Mouth Disease (FMD)
-                              </option>
+                              <option value="African Swine Fever (ASF)">African Swine Fever (ASF)</option>
+                              <option value="Avian Influenza">Avian Influenza (Bird Flu)</option>
+                              <option value="Foot and Mouth Disease (FMD)">Foot and Mouth Disease (FMD)</option>
                             </>
                           )}
                           <option value="Other">Other (Specify)</option>
@@ -584,7 +547,7 @@ export default function VetTransactionLogs() {
 
                       {diagnosisForm.diseasePreset === "Other" && (
                         <div>
-                          <label className="block text-xs font-bold text-red-500 uppercase tracking-widest mb-2">
+                          <label className="block font-mono text-label-caps text-error uppercase mb-2">
                             Specify Condition
                           </label>
                           <input
@@ -597,7 +560,7 @@ export default function VetTransactionLogs() {
                                 customDisease: e.target.value,
                               })
                             }
-                            className="w-full border-2 border-red-200 bg-white rounded-xl p-3.5 text-red-700 placeholder-red-300 focus:border-red-500 outline-none font-bold transition-colors"
+                            className="w-full bg-surface-container-lowest border border-error/30 text-error font-body text-body-md p-3 rounded outline-none focus:border-error focus:ring-1 focus:ring-error transition-colors"
                           />
                         </div>
                       )}
@@ -606,178 +569,57 @@ export default function VetTransactionLogs() {
 
                   {/* --- NEW: DYNAMIC WARNING BANNER --- */}
                   {diagnosisForm.severity === "dangerous" && (
-                    <div className="bg-red-50 border border-red-200 p-4 rounded-xl mt-4 shadow-sm">
-                      <h4 className="text-red-700 font-black text-xs uppercase tracking-widest mb-1 flex items-center gap-2">
-                        ⚠️ Legal Warning
+                    <div className="bg-error-container text-on-error-container p-md border border-error/30 mt-md">
+                      <h4 className="font-mono text-label-caps text-error uppercase mb-1 flex items-center gap-2 font-bold">
+                        <span className="material-symbols-outlined text-[14px]">warning</span>
+                        Legal Warning
                       </h4>
-                      <p className="text-red-600 text-xs font-medium leading-relaxed">
-                        Issuing this order will legally lock the batch. The
-                        farmer will be required to dispose of the assets on-site
-                        and provide proof to the Regulator.
+                      <p className="font-body text-body-sm">
+                        Issuing this order will legally lock the batch. The farmer will be required to dispose of the assets on-site and provide proof to the Regulator.
                       </p>
                     </div>
                   )}
-
-                  {/* --- NEW: DYNAMIC SUBMIT BUTTON --- */}
-                  <button
-                    onClick={handleDiagnosisSubmit}
-                    className={`w-full text-white font-black uppercase tracking-widest py-4 rounded-xl mt-4 shadow-lg transition-all active:scale-[0.98] ${
-                      diagnosisForm.severity === "dangerous"
-                        ? "bg-red-600 hover:bg-red-700 shadow-red-200 animate-pulse"
-                        : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200"
-                    }`}
-                  >
-                    {diagnosisForm.severity === "dangerous"
-                      ? "Issue Mandatory Cull Order"
-                      : modalType === "diagnose"
-                        ? "Submit Verification"
-                        : "Update Status"}
-                  </button>
                 </div>
               )}
+            </div>
 
-              {/* 2. HEALTH LOG FORM */}
-              {modalType === "healthLog" && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                        Record Type
-                      </label>
-                      <select
-                        value={healthLogForm.type}
-                        onChange={(e) =>
-                          setHealthLogForm({
-                            ...healthLogForm,
-                            type: e.target.value,
-                          })
-                        }
-                        className="w-full border-2 border-slate-100 rounded-xl p-3.5 outline-none focus:border-blue-500 font-bold text-slate-700 transition-colors"
-                      >
-                        <option>Vaccination</option>
-                        <option>Deworming</option>
-                        <option>Lab Test</option>
-                        <option>Vitamin</option>
-                        <option>VHC Issuance</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                        Next Due (Opt)
-                      </label>
-                      <input
-                        type="date"
-                        value={healthLogForm.nextDueDate}
-                        onChange={(e) =>
-                          setHealthLogForm({
-                            ...healthLogForm,
-                            nextDueDate: e.target.value,
-                          })
-                        }
-                        className="w-full border-2 border-slate-100 rounded-xl p-3.5 outline-none focus:border-blue-500 font-bold text-slate-700 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                      Name / Description
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Hog Cholera Vaccine (Batch 99)"
-                      value={healthLogForm.name}
-                      onChange={(e) =>
-                        setHealthLogForm({
-                          ...healthLogForm,
-                          name: e.target.value,
-                        })
-                      }
-                      className="w-full border-2 border-slate-100 rounded-xl p-3.5 outline-none focus:border-blue-500 text-slate-700 font-bold transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                      Notes
-                    </label>
-                    <textarea
-                      placeholder="Any observation during administration..."
-                      value={healthLogForm.notes}
-                      onChange={(e) =>
-                        setHealthLogForm({
-                          ...healthLogForm,
-                          notes: e.target.value,
-                        })
-                      }
-                      className="w-full border-2 border-slate-100 rounded-xl p-3.5 h-24 resize-none outline-none focus:border-blue-500 text-slate-700 transition-colors"
-                    />
-                  </div>
-
-                  <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100">
-                    <label className="block text-xs font-black text-blue-600 uppercase tracking-widest mb-3 text-center">
-                      Upload Proof (Optional)
-                    </label>
-                    <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-blue-200 border-dashed rounded-xl cursor-pointer bg-white hover:bg-blue-50 transition-colors">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <svg
-                            className="w-6 h-6 mb-2 text-blue-400"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 20 16"
-                          >
-                            <path
-                              stroke="currentColor"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                            />
-                          </svg>
-                          <p className="mb-1 text-xs text-slate-500">
-                            <span className="font-bold text-blue-600">
-                              Click to upload
-                            </span>{" "}
-                            or drag and drop
-                          </p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-1">
-                            PDF, PNG, or JPG (MAX. 5MB)
-                          </p>
-                        </div>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept="image/*,.pdf"
-                          onChange={(e) =>
-                            setHealthLogForm({
-                              ...healthLogForm,
-                              proofFile: e.target.files[0],
-                            })
-                          }
-                        />
-                      </label>
-                    </div>
-                    {healthLogForm.proofFile && (
-                      <p className="text-xs text-emerald-600 font-bold mt-3 text-center flex items-center justify-center gap-1 bg-emerald-50 py-2 rounded-lg border border-emerald-100">
-                        ✅ {healthLogForm.proofFile.name}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={handleHealthLogSubmit}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest py-4 rounded-xl mt-4 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]"
-                  >
-                    Save to Digital Log
-                  </button>
-                </div>
-              )}
+            {/* ── FOOTER ── */}
+            <div className="px-lg py-md border-t border-outline-variant bg-surface flex justify-end gap-md">
+              <button
+                onClick={closeModal}
+                className="px-lg py-xs border border-outline-variant font-mono text-label-caps text-on-surface hover:bg-surface-container-low transition-colors uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDiagnosisSubmit}
+                className={`px-lg py-xs font-mono text-label-caps hover:brightness-110 transition-all flex items-center gap-2 uppercase ${
+                  diagnosisForm.severity === "dangerous"
+                    ? "bg-error text-white animate-pulse"
+                    : "bg-primary text-on-primary"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[14px]">fact_check</span>
+                {diagnosisForm.severity === "dangerous"
+                  ? "Issue Mandatory Cull Order"
+                  : modalType === "diagnose"
+                    ? "Submit Verification"
+                    : "Update Status"}
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* === MEDICAL LOG MODAL === */}
+      <MedicalLogModal
+        isOpen={showHealthModal}
+        onClose={() => setShowHealthModal(false)}
+        healthLoading={healthLoading}
+        healthLogs={healthLogs}
+        selectedAnimal={selectedAnimal}
+      />
+
       <TransactionLoadingOverlay isOpen={txLoading} message={txMessage} />
     </div>
   );

@@ -15,101 +15,93 @@ export default function FarmerLayout() {
     navigate("/login");
   };
 
-  /**
-   * REFINED HOVER LOGIC:
-   * Active: White background with green text.
-   * Hover: Subtle transparent white overlay (white/10) to keep text readable.
-   */
   const isActive = (path) =>
-    location.pathname === path || location.pathname.includes(path)
-      ? "bg-white text-[var(--green)] shadow-md"
-      : "text-white hover:bg-white/10 hover:shadow-sm";
+    location.pathname === path || location.pathname.includes(path);
+
+  const navLinkClasses = (path) =>
+    `px-4 py-3 flex items-center gap-3 transition-colors tap-target ${
+      isActive(path)
+        ? "border-l-4 border-primary bg-surface-container-high text-primary font-bold"
+        : "text-on-surface-variant hover:bg-surface-container-highest border-l-4 border-transparent"
+    }`;
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-green-50 overflow-hidden">
-      
-      {/* MOBILE HEADER */}
-      <header className="lg:hidden bg-[var(--green)] text-white px-6 py-4 flex justify-between items-center shadow-md z-50">
-        <div>
-          {/* Typography: Black weight and Tighter tracking */}
-          <h1 className="text-xl font-black tracking-tighter">Farmer Portal</h1>
-          <p className="text-[var(--light-green)] text-xs font-bold tracking-[0.2em] uppercase mt-0.5 opacity-90">Santa Rosa City</p>
-        </div>
+    <div className="flex flex-col lg:flex-row h-screen bg-surface font-body overflow-hidden">
 
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex flex-col gap-1.5 focus:outline-none">
-          <div className={`w-7 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
-          <div className={`w-7 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? 'opacity-0 scale-0' : ''}`}></div>
-          <div className={`w-7 h-0.5 bg-white transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
+      {/* ── Mobile Header ── */}
+      <header className="lg:hidden bg-surface-bright text-on-surface px-lg py-4 flex justify-between items-center border-b border-outline-variant z-50">
+        <div>
+          <h1 className="font-display text-headline-md font-bold text-primary">Farmer Portal</h1>
+          <p className="font-mono text-label-caps text-on-surface-variant opacity-70 uppercase">Veterinary Oversight</p>
+        </div>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-primary">
+          <span className="material-symbols-outlined text-[28px]">{isMenuOpen ? 'close' : 'menu'}</span>
         </button>
       </header>
 
-      {/* SIDEBAR */}
+      {/* ── Clinical White Sidebar ── */}
       <aside className={`
         fixed lg:relative inset-x-0 top-0 lg:top-auto
-        lg:w-72 lg:flex lg:flex-col lg:shadow-xl
-        bg-[var(--green)] text-white 
-        flex flex-col z-40 h-full
+        lg:w-sidebar lg:flex lg:flex-col
+        bg-surface border-r border-outline-variant
+        flex flex-col z-40 h-full overflow-y-auto
         transition-all duration-500 ease-in-out
         ${isMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 lg:opacity-100 lg:translate-y-0"}
       `}>
-        {/* Desktop Logo / Header - Typography Enhancement */}
-        <div className="hidden lg:block p-8 border-b border-green-700/40">
-          <h1 className="text-2xl font-black tracking-tighter">Farmer Portal</h1>
-          <p className="text-[var(--light-green)] text-xs font-bold uppercase tracking-[0.2em] mt-1 opacity-90">Santa Rosa City</p>
+        {/* Desktop Header */}
+        <div className="hidden lg:block p-lg">
+          <h1 className="font-display text-headline-md font-bold text-primary">Farmer Portal</h1>
+          <p className="font-mono text-label-caps text-on-surface-variant opacity-70 uppercase">Veterinary Oversight</p>
         </div>
 
-        <nav className="flex-1 p-6 lg:p-5 space-y-2 mt-16 lg:mt-0 overflow-y-auto">
-          {/* Links - Typography Enhancement: font-bold + tracking-tight */}
-          <Link 
-            to="/farmer/profile" 
-            onClick={() => setIsMenuOpen(false)} 
-            className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-200 font-bold text-base tracking-tight ${isActive("/farmer/profile")}`}
-          >
-            <span className="text-2xl">👤</span>
-            <span>My Profile</span>
+        <nav className="flex-1 px-sm mt-16 lg:mt-0">
+          <Link to="/farmer/livestock" onClick={() => setIsMenuOpen(false)} className={navLinkClasses("/farmer/livestock")}>
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>pets</span>
+            <span className="font-body text-body-md">Livestock Records</span>
           </Link>
-
-          <Link 
-            to="/farmer/livestock" 
-            onClick={() => setIsMenuOpen(false)} 
-            className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-200 font-bold text-base tracking-tight ${isActive("/farmer/livestock")}`}
-          >
-            <span className="text-2xl">🐷</span>
-            <span>My Livestock</span>
+          <Link to="/farmer/logistics" onClick={() => setIsMenuOpen(false)} className={navLinkClasses("/farmer/logistics")}>
+            <span className="material-symbols-outlined">local_shipping</span>
+            <span className="font-body text-body-md">Logistics</span>
           </Link>
-
-          <Link 
-            to="/farmer/logistics" 
-            onClick={() => setIsMenuOpen(false)} 
-            className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-200 font-bold text-base tracking-tight ${isActive("/farmer/logistics")}`}
-          >
-            <span className="text-2xl">🚚</span>
-            <span>Logistics</span>
+          <Link to="/farmer/profile" onClick={() => setIsMenuOpen(false)} className={navLinkClasses("/farmer/profile")}>
+            <span className="material-symbols-outlined">person</span>
+            <span className="font-body text-body-md">My Profile</span>
           </Link>
         </nav>
 
-        {/* FOOTER */}
-        <div className="p-6 border-t border-green-700/40 bg-black/10">
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-3 bg-red-600/90 hover:bg-red-700 text-white py-3.5 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all shadow-md hover:shadow-lg active:scale-95"
-          >
-            <span>Sign Out</span>
+        {/* CTA + Footer */}
+        <div className="p-lg mt-auto">
+          <button className="w-full bg-primary text-on-primary font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-opacity hover:opacity-90 tap-target">
+            <span className="material-symbols-outlined">add_circle</span>
+            <span>New Report</span>
           </button>
+          <div className="mt-lg border-t border-outline-variant pt-md">
+            <a href="#" className="text-on-surface-variant px-4 py-2 flex items-center gap-3 hover:bg-surface-container-highest transition-colors tap-target">
+              <span className="material-symbols-outlined">settings</span>
+              <span className="font-body text-body-md">Settings</span>
+            </a>
+            <button
+              onClick={handleLogout}
+              className="text-on-surface-variant px-4 py-2 flex items-center gap-3 hover:bg-surface-container-highest transition-colors tap-target w-full text-left"
+            >
+              <span className="material-symbols-outlined">logout</span>
+              <span className="font-body text-body-md">Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* MOBILE OVERLAY */}
+      {/* ── Mobile Overlay ── */}
       {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden" 
-          onClick={() => setIsMenuOpen(false)} 
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsMenuOpen(false)}
         />
       )}
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pt-4 lg:pt-0">
-        <div className="max-w-7xl mx-auto p-4 sm:p-8">
+      {/* ── Main Content ── */}
+      <main className="flex-1 overflow-y-auto pt-4 lg:pt-0">
+        <div className="max-w-7xl mx-auto p-lg">
           <Outlet />
         </div>
       </main>

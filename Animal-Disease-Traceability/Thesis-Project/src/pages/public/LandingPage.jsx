@@ -153,30 +153,32 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, [lastSyncTimestamp]);
 
-  const commonOptions = {
+  /* ── Chart Styling (Clinical) ── */
+  const clinicalChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { 
-      legend: { position: "top", labels: { color: "#374151", font: { weight: 'bold' } } } 
+      legend: { position: "top", labels: { color: "#3f484b", font: { family: 'Inter', weight: '600', size: 12 } } } 
     },
     scales: {
-      x: { ticks: { color: "#4b5563" }, grid: { display: false } },
-      y: { ticks: { color: "#4b5563" }, grid: { color: "rgba(0,0,0,0.05)" } }
+      x: { ticks: { color: "#6f797b", font: { family: 'JetBrains Mono', size: 11 } }, grid: { display: false } },
+      y: { ticks: { color: "#6f797b", font: { family: 'JetBrains Mono', size: 11 } }, grid: { color: "rgba(190, 200, 203, 0.3)" } }
     }
   };
 
+  /* ── Loading State ── */
   if (loading) return (
-    <div className="fixed inset-0 flex items-center justify-center bg-slate-50/30 backdrop-blur-sm z-[1000]">
-      <div className="bg-white/80 p-8 sm:p-10 rounded-[2.5rem] shadow-2xl border border-white flex flex-col items-center">
-        <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-6">
-          <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
-          <div className="absolute inset-0 rounded-full border-4 border-t-green-600 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+    <div className="fixed inset-0 flex items-center justify-center bg-surface/80 backdrop-blur-sm z-[1000]">
+      <div className="bg-surface-container-lowest p-10 rounded-xl shadow-clinical border border-outline-variant flex flex-col items-center">
+        <div className="relative w-16 h-16 mb-6">
+          <div className="absolute inset-0 rounded-full border-4 border-outline-variant"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
+            <div className="w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(0,84,96,0.4)]"></div>
           </div>
         </div>
-        <h2 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight uppercase">System Syncing</h2>
-        <p className="text-slate-500 font-bold text-xs mt-2 tracking-[0.2em] animate-pulse">
+        <h2 className="font-display text-headline-md font-bold text-on-surface">System Syncing</h2>
+        <p className="text-on-surface-variant font-mono text-label-caps mt-2 animate-pulse uppercase">
           Fetching ledger data...
         </p>
       </div>
@@ -184,115 +186,166 @@ export default function LandingPage() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-slate-50/50 flex flex-col items-center">
+    <div className="min-h-screen w-full bg-background font-body flex flex-col items-center">
       
-      {/* HERO SECTION */}
-      <section className="w-full max-w-7xl pt-20 sm:pt-24 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-5 sm:px-6">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          <div className="flex-1 text-center md:text-left">
-            <div className="inline-block px-4 py-1.5 mb-5 sm:mb-6 rounded-full bg-green-100 text-green-700 text-xs sm:text-sm font-bold tracking-wide border border-green-200 shadow-sm">
-              Powered by HyperLedger Fabric • Real-time • Immutable
-            </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-gray-900 tracking-tighter leading-tight mb-6 md:mb-8">
-              Secure Animal <br className="hidden sm:block" />
-              <span className="text-green-600">Traceability Platform</span>
-            </h2>
-            <p className="text-gray-700 text-lg sm:text-xl md:text-2xl leading-relaxed font-medium max-w-3xl mx-auto md:mx-0">
-              Protecting Santa Rosa's livestock supply chain through blockchain-verified data. 
-              Real-time monitoring of animal health, movement, and disease risks — empowering farmers, 
-              veterinarians, and local authorities with transparent, tamper-proof insights.
-            </p>
+      {/* ═══════════════════════════════════════════════════════
+          HERO SECTION — Clinical Teal Overlay
+      ═══════════════════════════════════════════════════════ */}
+      <section className="w-full hero-overlay py-24 sm:py-32 md:py-40 px-lg text-center text-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="w-20 h-20 mx-auto mb-8 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+            <span className="material-symbols-outlined text-[48px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>shield_with_heart</span>
+          </div>
+          <h2 className="font-display text-display-lg sm:text-5xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
+            Animal Disease Traceability System
+          </h2>
+          <p className="font-body text-body-lg text-white/80 max-w-2xl mx-auto mb-10">
+            National Livestock Health & Pathogen Surveillance Infrastructure — ADTS
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button 
+              onClick={() => window.scrollTo({top: 800, behavior: 'smooth'})} 
+              className="bg-white text-primary px-8 py-3 rounded font-bold font-body hover:bg-surface-container-lowest transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[20px]">dashboard</span>
+              Public Dashboard
+            </button>
+            <button 
+              onClick={() => navigate("/login")} 
+              className="bg-primary-container text-on-primary-container px-8 py-3 rounded font-bold font-body hover:opacity-90 transition-opacity flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[20px]">person</span>
+              Farmer Login
+            </button>
+            <button 
+              onClick={() => navigate("/login")} 
+              className="border border-white/40 text-white px-8 py-3 rounded font-bold font-body hover:bg-white/10 transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[20px]">public</span>
+              Partner Access
+            </button>
+          </div>
+        </div>
+      </section>
 
-            <div className="mt-8 sm:mt-10 md:mt-12 flex flex-col sm:flex-row justify-center md:justify-start gap-4 sm:gap-5">
-              <button 
-                onClick={() => window.scrollTo({top: 900, behavior: 'smooth'})} 
-                className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 bg-gray-900 text-white rounded-[2rem] font-bold text-lg sm:text-xl hover:bg-black transition-all shadow-2xl hover:shadow-3xl w-full sm:w-auto"
-              >
-                Explore Live Dashboard
-              </button>
-              <button 
-                onClick={() => navigate("/login")} 
-                className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 bg-white text-gray-900 border-2 border-gray-200 rounded-[2rem] font-bold text-lg sm:text-xl hover:bg-gray-50 transition-all shadow-lg w-full sm:w-auto"
-              >
-                Stakeholder Login
-              </button>
+      {/* ═══════════════════════════════════════════════════════
+          METRICS ROW — Key Statistics
+      ═══════════════════════════════════════════════════════ */}
+      <section className="w-full max-w-screen-2xl mx-auto px-lg -mt-12 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow">
+            <span className="font-mono text-label-caps text-on-surface-variant uppercase block mb-2">Total Livestock Tracked</span>
+            <div className="flex items-end justify-between">
+              <span className="font-display text-display-lg leading-none text-on-surface">{totalAnimals.toLocaleString()}</span>
+              <span className="text-tertiary font-mono text-data-mono flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                Live
+              </span>
             </div>
           </div>
-
-          <div className="w-full md:w-5/12 lg:w-1/3 bg-white p-6 sm:p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.12)] border border-gray-100 mt-10 md:mt-0">
-            <div className="space-y-8 sm:space-y-10 text-center">
-              <div className="pb-6 sm:pb-8 border-b border-gray-100">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Registered Livestock</p>
-                <p className="text-4xl sm:text-5xl font-black text-green-700">{totalAnimals.toLocaleString()}</p>
-                <p className="text-sm text-gray-600 mt-1">Across all barangays</p>
-              </div>
-
-              <div className="pb-6 sm:pb-8 border-b border-gray-100">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Authorized Stakeholders</p>
-                <p className="text-3xl sm:text-4xl font-black text-gray-900">{stakeholderCount.toLocaleString()}</p>
-                <p className="text-sm text-gray-600 mt-1">Farmers • Vets • LGU</p>
-              </div>
-
-              <div className="pb-6 sm:pb-8 border-b border-gray-100">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Last Blockchain Sync</p>
-                <div className="flex items-center justify-center gap-3">
-                  <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
-                  <p className="text-2xl sm:text-3xl font-bold text-green-700">{timeAgo}</p>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Broadcast Alert</p>
-                <p className="text-2xl sm:text-3xl font-bold text-emerald-600">Active System</p>
-                <p className="text-sm text-gray-600 mt-1 mb-3 sm:mb-4">Official Veterinary Logs</p>
-                <button 
-                  onClick={() => setIsHistoryModalOpen(true)}
-                  className="w-full py-3 sm:py-4 bg-slate-900 text-white rounded-xl font-bold text-xs sm:text-sm uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-md active:scale-95"
-                >
-                  View Alert History
-                </button>
-              </div>
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow">
+            <span className="font-mono text-label-caps text-on-surface-variant uppercase block mb-2">Active Stakeholders</span>
+            <div className="flex items-end justify-between">
+              <span className="font-display text-display-lg leading-none text-on-surface">{stakeholderCount.toLocaleString()}</span>
+              <span className="text-on-surface-variant font-mono text-data-mono">
+                <span className="material-symbols-outlined text-[16px]">verified</span>
+              </span>
+            </div>
+          </div>
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow">
+            <span className="font-mono text-label-caps text-on-surface-variant uppercase block mb-2">Monitored Zones</span>
+            <div className="flex items-end justify-between">
+              <span className="font-display text-display-lg leading-none text-on-surface">18</span>
+              <span className="text-secondary font-mono text-data-mono">Barangays</span>
+            </div>
+          </div>
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow">
+            <span className="font-mono text-label-caps text-on-surface-variant uppercase block mb-2">Last Blockchain Sync</span>
+            <div className="flex items-end justify-between">
+              <span className="font-display text-headline-md leading-none text-on-surface font-bold">{timeAgo}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-tertiary animate-pulse"></span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* DASHBOARD GRID */}
-      <div className="w-full max-w-7xl mx-auto px-5 sm:px-6 py-12 sm:py-16 md:py-20">
-        <div className="mb-12 sm:mb-16 md:mb-20 text-center max-w-4xl mx-auto">
-          <h1 className="text-xs sm:text-sm font-black text-green-600 uppercase tracking-[0.3em] sm:tracking-[0.4em] mb-4 md:mb-5">
-            Immutable • Transparent • Actionable
-          </h1>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 md:mb-8">
-            Santa Rosa Livestock Dashboard
-          </h2>
-          <p className="text-gray-700 text-base sm:text-lg md:text-xl leading-relaxed font-medium px-2 sm:px-0">
+      {/* ═══════════════════════════════════════════════════════
+          SYSTEM CORE — Technological Oversight Protocols
+      ═══════════════════════════════════════════════════════ */}
+      <section className="w-full max-w-screen-2xl mx-auto px-lg py-xl mt-xl">
+        <div className="text-center mb-xl">
+          <span className="inline-block border border-outline-variant px-4 py-1 rounded font-mono text-label-caps text-on-surface-variant uppercase mb-4">System Core</span>
+          <h3 className="font-display text-display-lg text-on-surface">Technological Oversight Protocols</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow hover:border-primary transition-colors group">
+            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-md">
+              <span className="material-symbols-outlined text-primary text-[28px]">hub</span>
+            </div>
+            <h4 className="font-display text-headline-md font-bold text-on-surface mb-sm">Real-time Traceability</h4>
+            <p className="font-body text-body-md text-on-surface-variant leading-relaxed mb-lg">
+              Unified movement tracking system utilizing RFID and geospatial data to provide instant oversight across barangays, ensuring rapid response during potential outbreak vectors.
+            </p>
+            <button onClick={() => navigate("/animal-movement")} className="font-body text-body-md text-primary font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+              Learn more <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          </div>
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow hover:border-primary transition-colors group">
+            <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-md">
+              <span className="material-symbols-outlined text-secondary text-[28px]">monitoring</span>
+            </div>
+            <h4 className="font-display text-headline-md font-bold text-on-surface mb-sm">Health Surveillance</h4>
+            <p className="font-body text-body-md text-on-surface-variant leading-relaxed mb-lg">
+              Advanced pathogen sensing and laboratory integration protocols. Automated reporting systems connect veterinary services directly with local biosecurity infrastructure.
+            </p>
+            <button onClick={() => navigate("/health-table")} className="font-body text-body-md text-primary font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+              Review protocols <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          </div>
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-lg clinical-shadow hover:border-primary transition-colors group">
+            <div className="w-12 h-12 bg-tertiary/10 rounded-lg flex items-center justify-center mb-md">
+              <span className="material-symbols-outlined text-tertiary text-[28px]">verified_user</span>
+            </div>
+            <h4 className="font-display text-headline-md font-bold text-on-surface mb-sm">Blockchain Verification</h4>
+            <p className="font-body text-body-md text-on-surface-variant leading-relaxed mb-lg">
+              Immutable cryptographic records for every animal life-cycle event. Ensures data integrity and prevents tampering with health certificates and origin declarations.
+            </p>
+            <button onClick={() => navigate("/summary-report")} className="font-body text-body-md text-primary font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+              Data integrity <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          DASHBOARD GRID — Data Visualizations
+      ═══════════════════════════════════════════════════════ */}
+      <div className="w-full max-w-screen-2xl mx-auto px-lg py-xl">
+        <div className="mb-xl text-center max-w-3xl mx-auto">
+          <span className="inline-block border border-outline-variant px-4 py-1 rounded font-mono text-label-caps text-on-surface-variant uppercase mb-4">Live Data</span>
+          <h3 className="font-display text-display-lg text-on-surface mb-md">ADTS Livestock Dashboard</h3>
+          <p className="font-body text-body-lg text-on-surface-variant leading-relaxed">
             Real-time visibility into animal health, movement patterns, disease risks, and supply chain integrity. 
-            By anchoring critical checkpoints to the blockchain, we ensure a tamper-proof audit trail—guaranteeing data authenticity for farmers, veterinarians, 
-            meat inspectors, and local government units in Santa Rosa City, Laguna.
+            Anchored to the blockchain for a tamper-proof audit trail.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
 
           {/* CARD 1: MOVEMENT */}
-          <div className="group bg-white rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-10 lg:p-12 shadow border border-gray-100/80 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col min-h-[600px] sm:min-h-[720px]">
-            <div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-4 sm:gap-0">
-                <div className="p-6 sm:p-7 bg-green-50 rounded-[2rem] sm:rounded-[2.5rem] text-4xl sm:text-5xl shadow-inner">🚚</div>
-                <div className="text-left sm:text-right">
-                  <p className="text-xs font-black text-green-600 uppercase tracking-widest">Live Tracking</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Movement</p>
-                </div>
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-lg clinical-shadow flex flex-col overflow-hidden">
+            <div className="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-[20px]">bar_chart</span>
+                <h3 className="font-mono text-label-caps uppercase">Species Distribution</h3>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 sm:mb-5">City Distribution Map and Population Census</h3>
-              <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
-                Real-time tracking of livestock demographics and distribution across Santa Rosa. 
-                By monitoring population shifts and species-specific data, authorities can 
-                optimize resource allocation and ensure precise logistics for city-wide safety programs.
+              <span className="font-mono text-label-caps text-on-surface-variant uppercase">Live</span>
+            </div>
+            <div className="p-lg flex-1">
+              <p className="font-body text-body-md text-on-surface-variant mb-md">
+                Registered livestock by species across all registered barangays in the ADTS network.
               </p>
-
-              <div className="h-64 sm:h-72 mb-6 overflow-x-auto">
+              <div className="h-64 mb-md">
                 <Bar 
                   data={{
                     labels: SPECIES_LIST,
@@ -300,101 +353,76 @@ export default function LandingPage() {
                       label: "Registered Animals", 
                       data: SPECIES_LIST.map(s => speciesStats[s]?.total || 0), 
                       backgroundColor: [
-                        "#f59e0b", "#3b82f6", "#ef4444", "#06b6d4", "#10b981", "#6366f1"
+                        "#005460", "#436085", "#005835", "#0a6e7c", "#84d2e2", "#74daa1"
                       ], 
-                      borderRadius: 12 
+                      borderRadius: 4 
                     }]
                   }} 
-                  options={commonOptions} 
+                  options={clinicalChartOptions} 
                 />
               </div>
-
-              <div className="flex justify-around items-center bg-slate-50 rounded-2xl py-3 sm:py-4 mb-6 border border-slate-100 flex-wrap gap-4">
-                {["🐖", "🐄", "🐓", "🐃", "🐐", "🦆"].map((emoji, i) => (
-                  <span key={i} className="text-2xl sm:text-3xl filter drop-shadow-sm transition-transform group-hover:scale-110">
-                    {emoji}
-                  </span>
-                ))}
-              </div>
             </div>
-
-            <div className="mt-auto pt-6 border-t border-gray-100">
-              <p className="text-sm text-gray-500 mb-4">
-                Data is updated in real-time from field reports and verified entries.
-              </p>
-              <button onClick={() => navigate("/animal-movement")} className="w-full py-4 sm:py-5 bg-green-600 text-white rounded-2xl font-black text-base sm:text-lg transition-all hover:bg-green-700 shadow-xl">
+            <div className="px-lg py-md border-t border-outline-variant bg-surface-container-low">
+              <button onClick={() => navigate("/animal-movement")} className="font-mono text-label-caps text-primary hover:underline uppercase">
                 View Full Movement Map →
               </button>
             </div>
           </div>
 
           {/* CARD 2: HEALTH */}
-          <div className="group bg-white rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-10 lg:p-12 shadow border border-gray-100/80 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col min-h-[600px] sm:min-h-[720px]">
-            <div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-4 sm:gap-0">
-                <div className="p-6 sm:p-7 bg-emerald-50 rounded-[2rem] sm:rounded-[2.5rem] text-4xl sm:text-5xl shadow-inner">🩺</div>
-                <div className="text-left sm:text-right">
-                  <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Medical Records</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Health Status</p>
-                </div>
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-lg clinical-shadow flex flex-col overflow-hidden">
+            <div className="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-tertiary text-[20px]">health_and_safety</span>
+                <h3 className="font-mono text-label-caps uppercase">Health Status Matrix</h3>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 sm:mb-5">Animal Health Overview</h3>
-              <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
-                Real-time breakdown of healthy vs. sick animals per species. 
-                Critical for early warning of disease outbreaks and evaluating the effectiveness 
-                of vaccination campaigns and biosecurity measures in Santa Rosa.
-              </p>
-
-              <div className="overflow-x-auto rounded-3xl border border-gray-100 mb-6">
-                <table className="w-full min-w-[500px] text-left text-sm sm:text-base">
-                  <thead className="bg-gray-50 text-xs sm:text-sm font-black uppercase tracking-wider">
-                    <tr>
-                      <th className="py-4 sm:py-5 px-6 sm:px-8">Species</th>
-                      <th className="py-4 sm:py-5 text-center text-green-700">Healthy</th>
-                      <th className="py-4 sm:py-5 text-center text-red-600">Sick</th>
-                      <th className="py-4 sm:py-5 text-center text-amber-600">Unverified</th>
+              <span className="font-mono text-label-caps text-on-surface-variant uppercase">Real-time</span>
+            </div>
+            <div className="p-lg flex-1">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse zebra-table">
+                  <thead>
+                    <tr className="bg-surface-container text-on-surface-variant">
+                      <th className="px-md py-3 font-mono text-label-caps uppercase">Species</th>
+                      <th className="px-md py-3 font-mono text-label-caps text-tertiary uppercase text-center">Healthy</th>
+                      <th className="px-md py-3 font-mono text-label-caps text-error uppercase text-center">Sick</th>
+                      <th className="px-md py-3 font-mono text-label-caps text-secondary uppercase text-center">Unverified</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 font-semibold">
+                  <tbody className="font-body text-body-md divide-y divide-outline-variant">
                     {SPECIES_LIST.map(s => (
-                      <tr key={s}>
-                        <td className="py-4 sm:py-5 px-6 sm:px-8 font-bold text-gray-800">{s}</td>
-                        <td className="py-4 sm:py-5 text-center text-green-700">{speciesStats[s]?.healthy?.toLocaleString() || "0"}</td>
-                        <td className="py-4 sm:py-5 text-center text-red-600">{speciesStats[s]?.sick?.toLocaleString() || "0"}</td>
-                        <td className="py-4 sm:py-5 text-center text-amber-600">{speciesStats[s]?.unverified?.toLocaleString() || "0"}</td>
+                      <tr key={s} className="hover:bg-surface-container-low transition-colors">
+                        <td className="px-md py-3 font-bold text-on-surface">{s}</td>
+                        <td className="px-md py-3 text-center font-mono text-data-mono text-tertiary">{speciesStats[s]?.healthy?.toLocaleString() || "0"}</td>
+                        <td className="px-md py-3 text-center font-mono text-data-mono text-error">{speciesStats[s]?.sick?.toLocaleString() || "0"}</td>
+                        <td className="px-md py-3 text-center font-mono text-data-mono text-secondary">{speciesStats[s]?.unverified?.toLocaleString() || "0"}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             </div>
-            <div className="mt-auto pt-6 border-t border-gray-100">
-              <p className="text-sm text-gray-500 mb-4">
-                All health classifications are based on field veterinary assessments.
-              </p>
-              <button onClick={() => navigate("/health-table")} className="w-full py-4 sm:py-5 bg-emerald-600 text-white rounded-2xl font-black text-base sm:text-lg transition-all hover:bg-emerald-700 shadow-xl">
+            <div className="px-lg py-md border-t border-outline-variant bg-surface-container-low">
+              <button onClick={() => navigate("/health-table")} className="font-mono text-label-caps text-primary hover:underline uppercase">
                 Explore Detailed Health Records →
               </button>
             </div>
           </div>
 
           {/* CARD 3: OUTBREAKS */}
-          <div className="group bg-white rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-10 lg:p-12 shadow border border-gray-100/80 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col min-h-[600px] sm:min-h-[720px]">
-            <div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-4 sm:gap-0">
-                <div className="p-6 sm:p-7 bg-red-50 rounded-[2rem] sm:rounded-[2.5rem] text-4xl sm:text-5xl shadow-inner">🚨</div>
-                <div className="text-left sm:text-right">
-                  <p className="text-xs font-black text-red-600 uppercase tracking-widest">Early Warning</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Disease Risk</p>
-                </div>
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-lg clinical-shadow flex flex-col overflow-hidden">
+            <div className="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-error text-[20px]">emergency</span>
+                <h3 className="font-mono text-label-caps uppercase">Disease Risk Analysis</h3>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 sm:mb-5">Outbreak Statistics & Analytics</h3>
-              <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
-                Real-time tracking of livestock health conditions across Santa Rosa. This data identifies 
-                high-risk areas and severity levels, enabling rapid medical response and targeted 
-                quarantine protocols to maintain city-wide biosecurity.
+              <span className="font-mono text-label-caps text-on-surface-variant uppercase">Surveillance</span>
+            </div>
+            <div className="p-lg flex-1">
+              <p className="font-body text-body-md text-on-surface-variant mb-md">
+                Health condition breakdown across all livestock. Critical for early warning of disease outbreaks.
               </p>
-              <div className="h-64 sm:h-72 mb-6">
+              <div className="h-64 mb-md">
                 <Pie 
                   data={{
                     labels: ["Healthy", "Mild Cases", "Dangerous Cases", "Unverified"],
@@ -405,186 +433,151 @@ export default function LandingPage() {
                         diseaseStats.dangerous, 
                         diseaseStats.unverified
                       ], 
-                      backgroundColor: ["#10b981", "#3b82f6", "#ef4444", "#f59e0b"], 
+                      backgroundColor: ["#005835", "#436085", "#ba1a1a", "#bec8cb"], 
                       borderWidth: 0 
                     }]
                   }} 
-                  options={commonOptions} 
+                  options={clinicalChartOptions} 
                 />
               </div>
             </div>
-            <div className="mt-auto pt-6 border-t border-gray-100">
-              <p className="text-sm text-gray-500 mb-4">
-                Data reflects only confirmed veterinary diagnoses.
-              </p>
-              <button onClick={() => navigate("/outbreak-stats")} className="w-full py-4 sm:py-5 bg-red-600 text-white rounded-2xl font-black text-base sm:text-lg transition-all hover:bg-red-700 shadow-xl">
+            <div className="px-lg py-md border-t border-outline-variant bg-surface-container-low">
+              <button onClick={() => navigate("/outbreak-stats")} className="font-mono text-label-caps text-primary hover:underline uppercase">
                 View Risk Mitigation Tools →
               </button>
             </div>
           </div>
 
           {/* CARD 4: TRENDS */}
-          <div className="group bg-white rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-10 lg:p-12 shadow border border-gray-100/80 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 flex flex-col min-h-[600px] sm:min-h-[720px]">
-            <div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-4 sm:gap-0">
-                <div className="p-6 sm:p-7 bg-blue-50 rounded-[2rem] sm:rounded-[2.5rem] text-4xl sm:text-5xl shadow-inner">📈</div>
-                <div className="text-left sm:text-right">
-                  <p className="text-xs font-black text-blue-600 uppercase tracking-widest">Trend Analysis</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">Disease Trends</p>
-                </div>
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-lg clinical-shadow flex flex-col overflow-hidden">
+            <div className="px-lg py-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-secondary text-[20px]">show_chart</span>
+                <h3 className="font-mono text-label-caps uppercase">Monthly Trend Analysis</h3>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 sm:mb-5">Monthly Sick Cases Trend</h3>
-              <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
-                12-month historical view of confirmed sick cases. 
-                Identify seasonal patterns, evaluate intervention success, 
-                and forecast potential future risks for better preparedness.
+              <span className="font-mono text-label-caps text-on-surface-variant uppercase">12-Month</span>
+            </div>
+            <div className="p-lg flex-1">
+              <p className="font-body text-body-md text-on-surface-variant mb-md">
+                Historical view of confirmed sick cases. Identify seasonal patterns and forecast potential risks.
               </p>
-              <div className="h-64 sm:h-72 mb-6">
+              <div className="h-64 mb-md">
                 <Line 
                   data={{
                     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     datasets: [{ 
                       label: "Confirmed Sick Cases", 
                       data: monthlyTrend, 
-                      borderColor: "#ef4444", // Red line
-                      backgroundColor: "rgba(239, 68, 68, 0.15)", // Light red fill
+                      borderColor: "#ba1a1a",
+                      backgroundColor: "rgba(186, 26, 26, 0.1)",
                       fill: true, 
                       tension: 0.4,
                       pointRadius: 4,
-                      pointBackgroundColor: "#ef4444"
+                      pointBackgroundColor: "#ba1a1a"
                     }]
                   }} 
-                  options={commonOptions} 
+                  options={clinicalChartOptions} 
                 />
               </div>
             </div>
-            <div className="mt-auto pt-6 border-t border-gray-100">
-              <p className="text-sm text-gray-500 mb-4">
-                Updated monthly with verified veterinary reports.
-              </p>
-              <button onClick={() => navigate("/summary-report")} className="w-full py-4 sm:py-5 bg-blue-600 text-white rounded-2xl font-black text-base sm:text-lg transition-all hover:bg-blue-700 shadow-xl">
+            <div className="px-lg py-md border-t border-outline-variant bg-surface-container-low">
+              <button onClick={() => navigate("/summary-report")} className="font-mono text-label-caps text-primary hover:underline uppercase">
                 Access Full Trend Reports →
               </button>
             </div>
           </div>
-
         </div>
 
-        {/* ALERT HISTORY MODAL – already quite responsive, minor padding tweaks */}
+        {/* ── Alert History Modal ── */}
         {isHistoryModalOpen && (
-          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-lg">
             <div
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md transition-opacity"
+              className="absolute inset-0 bg-on-surface/60 backdrop-blur-md transition-opacity"
               onClick={() => setIsHistoryModalOpen(false)}
             />
 
-            <div className="
-              relative w-full max-w-3xl max-h-[90vh] sm:max-h-[85vh] 
-              bg-white rounded-[2rem] sm:rounded-[2.5rem] 
-              shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] 
-              flex flex-col overflow-hidden
-              border border-white/20
-              animate-in fade-in zoom-in duration-300
-            ">
-              <div className="
-                px-6 sm:px-8 py-6 sm:py-8 
-                border-b border-slate-100 
-                flex items-center justify-between 
-                bg-white sticky top-0 z-10
-              ">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white-900 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-                    📜
+            <div className="relative w-full max-w-3xl max-h-[85vh] bg-surface-container-lowest rounded-xl shadow-2xl flex flex-col overflow-hidden border border-outline-variant">
+              <div className="px-lg py-lg border-b border-outline-variant flex items-center justify-between bg-surface-container-low sticky top-0 z-10">
+                <div className="flex items-center gap-md">
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+                    <span className="material-symbols-outlined">history</span>
                   </div>
                   <div>
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight uppercase">
-                      Alert History
-                    </h2>
+                    <h2 className="font-display text-headline-md font-bold text-on-surface">Alert History</h2>
+                    <p className="font-mono text-label-caps text-on-surface-variant uppercase">Broadcast Archive</p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setIsHistoryModalOpen(false)}
-                  className="
-                    w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full 
-                    bg-slate-50 text-slate-400 hover:text-red-500 
-                    hover:bg-red-50 hover:rotate-90
-                    transition-all duration-300
-                  "
+                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container text-on-surface-variant hover:text-error hover:bg-error-container transition-all"
                   aria-label="Close"
                 >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 sm:px-6 md:px-10 py-6 sm:py-8 bg-[#F8FAFC]">
+              <div className="flex-1 overflow-y-auto px-lg py-lg bg-surface">
                 {history.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full py-16 sm:py-20 text-center">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-slate-100 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-6 grayscale opacity-50">
-                      📂
+                  <div className="flex flex-col items-center justify-center h-full py-20 text-center">
+                    <div className="w-20 h-20 bg-surface-container rounded-xl flex items-center justify-center mb-md">
+                      <span className="material-symbols-outlined text-[40px] text-outline">folder_open</span>
                     </div>
-                    <p className="text-slate-800 font-black text-xl sm:text-2xl uppercase">
-                      No Transmission Logs
-                    </p>
-                    <p className="text-slate-500 mt-2 text-base sm:text-lg font-medium">
+                    <p className="font-display text-headline-md text-on-surface font-bold">No Transmission Logs</p>
+                    <p className="text-on-surface-variant font-body text-body-md mt-2">
                       Future alert broadcasts will be archived here.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-5 sm:space-y-6">
+                  <div className="space-y-md">
                     {history.map((item) => (
                     <div
                       key={item._id}
-                      className="relative bg-white rounded-[1.75rem] sm:rounded-[2rem] border border-slate-200/60 p-5 sm:p-6 md:p-8 hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 sm:gap-5"
+                      className={`relative bg-surface-container-lowest rounded-lg border border-outline-variant p-lg hover:border-primary transition-all flex flex-col gap-md ${
+                        item.severity === 'Critical' ? 'border-l-4 border-l-error' : 
+                        item.severity === 'Warning' ? 'border-l-4 border-l-secondary' : 'border-l-4 border-l-tertiary'
+                      }`}
                     >
-                      <div className={`absolute left-0 top-6 sm:top-8 bottom-6 sm:bottom-8 w-1 sm:w-1.5 rounded-r-full ${
-                        item.severity === 'Critical' ? 'bg-red-500' : 
-                        item.severity === 'Warning' ? 'bg-amber-500' : 'bg-emerald-500'
-                      }`} />
-
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                          <span className={`px-4 sm:px-5 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-tighter ${
-                            item.severity === 'Critical' ? 'bg-red-600 text-white' : 
-                            item.severity === 'Warning' ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white'
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-sm">
+                        <div className="flex flex-wrap items-center gap-sm">
+                          <span className={`status-badge ${
+                            item.severity === 'Critical' ? 'bg-error text-on-error' : 
+                            item.severity === 'Warning' ? 'bg-secondary text-on-secondary' : 'bg-tertiary text-on-tertiary'
                           }`}>
                             {item.severity}
                           </span>
-                          <time className="text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">
+                          <time className="font-mono text-data-mono text-outline">
                             {new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                           </time>
                         </div>
                         
-                        {/* METADATA SECTION: Includes Species, Location, and Barangay */}
-                        <div className="flex flex-col gap-1 text-[10px] font-bold self-start sm:self-auto">
-                          <div className="text-slate-400 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">
+                        <div className="flex flex-col gap-1 text-xs font-mono">
+                          <div className="text-on-surface-variant bg-surface-container px-3 py-1 rounded border border-outline-variant">
                             {item.species} • {item.location}
                           </div>
                           <div className="px-3">
-                            <span className="text-slate-400">Barangay:</span> 
-                            <span className="text-slate-900 font-bold ml-1">{item.targetBarangay}</span>
+                            <span className="text-outline">Barangay:</span> 
+                            <span className="text-on-surface font-bold ml-1">{item.targetBarangay}</span>
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <h4 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight mb-2 uppercase tracking-tight">
+                        <h4 className="font-display text-headline-md text-on-surface font-bold mb-2">
                           {item.title}
                         </h4>
                         
-                        <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mb-4">
+                        <p className="font-body text-body-md text-on-surface-variant leading-relaxed mb-md">
                           {item.details || item.description}
                         </p>
 
                         {item.instruction && (
-                          <div className={`p-4 rounded-xl border-l-4 ${
-                            item.severity === 'Critical' ? 'bg-red-50 border-red-500 text-red-900' : 
-                            item.severity === 'Warning' ? 'bg-amber-50 border-amber-500 text-amber-900' : 'bg-emerald-50 border-emerald-500 text-emerald-900'
+                          <div className={`p-md rounded-lg border-l-4 ${
+                            item.severity === 'Critical' ? 'bg-error-container border-error text-on-error-container' : 
+                            item.severity === 'Warning' ? 'bg-surface-container-high border-secondary text-on-surface' : 'bg-tertiary-fixed border-tertiary text-on-tertiary-fixed'
                           }`}>
-                            <p className="text-[10px] font-black uppercase tracking-[0.1em] mb-1">Required Action:</p>
-                            <p className="text-xs sm:text-sm font-bold leading-snug">
+                            <p className="font-mono text-label-caps uppercase mb-1">Required Action:</p>
+                            <p className="font-body text-body-md font-bold leading-snug">
                               {item.instruction}
                             </p>
                           </div>
@@ -596,45 +589,63 @@ export default function LandingPage() {
                 )}
               </div>
 
-              <div className="px-6 sm:px-10 py-5 sm:py-6 border-t border-slate-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
-                <p className="text-xs sm:text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+              <div className="px-lg py-md border-t border-outline-variant bg-surface-container-low flex flex-col sm:flex-row justify-between items-center gap-md">
+                <p className="font-mono text-label-caps text-outline uppercase">
                   End of Archive
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-900 font-black text-base sm:text-lg">{history.length}</span>
-                  <span className="text-slate-400 font-bold uppercase text-xs sm:text-sm tracking-widest">Reports Logged</span>
+                  <span className="font-display text-headline-md text-on-surface font-bold">{history.length}</span>
+                  <span className="font-mono text-label-caps text-outline uppercase">Reports Logged</span>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* BOTTOM SECTION */}
-        <div className="mt-20 sm:mt-24 md:mt-32 text-center max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-16 sm:pb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900">
-            Protecting Santa Rosa's Future
-          </h2>
-          <p className="text-lg sm:text-xl text-gray-700 leading-relaxed px-4 sm:px-0">
-            Our blockchain-powered platform ensures every animal movement, health check, 
-            and disease report is permanently recorded and verifiable. 
-            Together with farmers, veterinarians, and local government, 
-            we're building a safer, more transparent livestock ecosystem in Santa Rosa City.
-          </p>
-
-          <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
-            <button 
-              onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} 
-              className="px-8 sm:px-12 py-4 sm:py-6 bg-green-600 text-white rounded-2xl font-black text-lg sm:text-xl hover:bg-green-700 transition-all shadow-xl w-full sm:w-auto"
-            >
-              Back to Top ↑
-            </button>
-            <button 
-              onClick={() => navigate("/login")} 
-              className="px-8 sm:px-12 py-4 sm:py-6 bg-white border-2 border-green-600 text-green-700 rounded-2xl font-black text-lg sm:text-xl hover:bg-green-50 transition-all shadow-lg w-full sm:w-auto"
-            >
-              Join as Stakeholder →
-            </button>
+        {/* ── Authoritative Disease Oversight Block ── */}
+        <section className="mt-xl bg-[#0D1B2B] text-white rounded-lg overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+            <div className="p-xl flex flex-col justify-center">
+              <h3 className="font-display text-display-lg font-bold mb-md">Authoritative Disease Oversight</h3>
+              <p className="font-body text-body-lg text-white/70 mb-lg leading-relaxed">
+                The Animal Disease Traceability System operates as the primary technological anchor for ADTS livestock biosecurity. 
+                By integrating multi-modal data streams, we provide a sterile, high-precision environment for monitoring pathogen spread 
+                and ensuring the safety of the local food supply chain.
+              </p>
+              <ul className="space-y-sm">
+                <li className="flex items-center gap-sm text-white/80 font-body text-body-md">
+                  <span className="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">check_circle</span>
+                  Compliance with ISO 11784/11785 standards
+                </li>
+                <li className="flex items-center gap-sm text-white/80 font-body text-body-md">
+                  <span className="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">check_circle</span>
+                  Direct API integration with Local Veterinary Laboratories
+                </li>
+                <li className="flex items-center gap-sm text-white/80 font-body text-body-md">
+                  <span className="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">check_circle</span>
+                  24/7 Rapid Response Outbreak Taskforce connectivity
+                </li>
+              </ul>
+            </div>
+            <div className="bg-primary/20 min-h-[300px] flex items-center justify-center">
+              <div className="text-center p-xl">
+                <span className="material-symbols-outlined text-[80px] text-primary-fixed-dim mb-md block" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
+                <p className="font-mono text-label-caps text-white/60 uppercase">Blockchain-Verified Infrastructure</p>
+                <p className="font-display text-headline-md text-white/90 font-bold mt-sm">Powered by HyperLedger Fabric</p>
+              </div>
+            </div>
           </div>
+        </section>
+
+        {/* ── Alert History CTA ── */}
+        <div className="mt-xl text-center py-xl">
+          <button 
+            onClick={() => setIsHistoryModalOpen(true)}
+            className="bg-primary text-on-primary px-xl py-md rounded-lg font-bold font-body hover:opacity-90 transition-opacity clinical-shadow flex items-center gap-sm mx-auto"
+          >
+            <span className="material-symbols-outlined">notifications_active</span>
+            View Alert History
+          </button>
         </div>
       </div>
     </div>

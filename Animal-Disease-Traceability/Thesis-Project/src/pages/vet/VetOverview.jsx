@@ -31,7 +31,7 @@ export default function VetOverview() {
             </div>
             <h3 className="text-3xl font-bold text-gray-800 mb-6">Health Records</h3>
             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-              Access the comprehensive Santa Rosa livestock database. Monitor 
+              Access the comprehensive ADTS livestock database. Monitor 
               population health trends, track vaccination status, and review the 
               medical history of registered animals.
             </p>

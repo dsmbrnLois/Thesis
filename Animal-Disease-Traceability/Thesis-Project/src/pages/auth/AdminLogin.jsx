@@ -105,7 +105,7 @@ const AdminLogin = () => {
       </main>
 
       <footer className="bg-[var(--green)] text-white text-center py-6 w-full mt-auto">
-        <p className="text-xs opacity-80">© 2026 Santa Rosa City Laguna Animal Disease Traceability.</p>
+        <p className="text-xs opacity-80">© 2026 ADTS Animal Disease Traceability.</p>
       </footer>
     </div>
   );

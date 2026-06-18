@@ -115,7 +115,7 @@ export default function QRCodeModal({ isOpen, onClose, batchId, animal }) {
         </head>
         <body>
           <div class="card">
-            <div class="seal">City of Santa Rosa, Laguna</div>
+            <div class="seal">ADTS Regional Hub</div>
             <div class="title">Digital Animal Passport</div>
             <div class="qr-container">${svgData}</div>
             <div class="species">${animal?.species || "Livestock"}</div>

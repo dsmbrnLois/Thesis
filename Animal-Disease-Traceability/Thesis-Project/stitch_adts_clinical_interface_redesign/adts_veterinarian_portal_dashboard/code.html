@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ADTS Veterinarian Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#d3e4ff",
+                    "inverse-on-surface": "#e8f1ff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#6f797b",
+                    "on-primary": "#ffffff",
+                    "primary-container": "#0a6e7c",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#006876",
+                    "surface-variant": "#d4e4f8",
+                    "on-tertiary-fixed": "#002111",
+                    "inverse-primary": "#84d2e2",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#74daa1",
+                    "on-primary-container": "#9feefe",
+                    "on-secondary-container": "#3e5b80",
+                    "on-tertiary-fixed-variant": "#005231",
+                    "primary-fixed-dim": "#84d2e2",
+                    "error": "#ba1a1a",
+                    "surface": "#f7f9ff",
+                    "outline-variant": "#bec8cb",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "background": "#f7f9ff",
+                    "on-surface": "#0d1d2b",
+                    "secondary-fixed-dim": "#abc9f3",
+                    "on-background": "#0d1d2b",
+                    "surface-container-high": "#daeafe",
+                    "secondary-container": "#b6d4ff",
+                    "surface-bright": "#f7f9ff",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-highest": "#d4e4f8",
+                    "surface-container": "#e3efff",
+                    "on-secondary-fixed": "#001c38",
+                    "on-surface-variant": "#3f484b",
+                    "secondary": "#436085",
+                    "tertiary": "#005835",
+                    "on-secondary-fixed-variant": "#2a486c",
+                    "on-primary-fixed": "#001f25",
+                    "primary": "#005460",
+                    "inverse-surface": "#233241",
+                    "primary-fixed": "#a0efff",
+                    "on-tertiary-container": "#8ff6bb",
+                    "surface-container-low": "#edf4ff",
+                    "surface-dim": "#ccdcf0",
+                    "tertiary-fixed": "#90f7bc",
+                    "tertiary-container": "#007347",
+                    "on-primary-fixed-variant": "#004e59"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "lg": "24px",
+                    "margin-page": "24px",
+                    "grid-columns": "12",
+                    "md": "16px",
+                    "xs": "8px",
+                    "sidebar-width": "240px",
+                    "base": "4px",
+                    "sm": "12px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["DM Sans"],
+                    "label-caps": ["JetBrains Mono"],
+                    "data-mono": ["JetBrains Mono"],
+                    "headline-md": ["DM Sans"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .clinical-shadow { box-shadow: 0 2px 4px rgba(28, 43, 58, 0.08); }
+        .zebra-table tr:nth-child(even) { background-color: #ffffff; }
+        .zebra-table tr:nth-child(odd) { background-color: #f7f9ff; }
+        
+        /* Custom scrollbar for data density */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #bec8cb; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6f797b; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Predicted Component: SideNavBar (Standard Type) -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-surface dark:bg-surface-container-low border-r border-outline-variant flex flex-col h-full overflow-y-auto z-50">
+<div class="p-lg">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-1">ADTS Portal</div>
+<div class="font-body-md text-body-md text-on-surface-variant opacity-80">Veterinary Oversight</div>
+</div>
+<nav class="flex-1 flex flex-col px-0">
+<!-- Active Tab: Dashboard -->
+<a class="border-l-4 border-primary bg-surface-container-high text-primary font-bold px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">DASHBOARD</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">pets</span>
+<span class="font-label-caps text-label-caps">LIVESTOCK RECORDS</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">health_and_safety</span>
+<span class="font-label-caps text-label-caps">HEALTH REPORTS</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-caps text-label-caps">TRACEABILITY MAP</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">biotech</span>
+<span class="font-label-caps text-label-caps">LABORATORY RESULTS</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<button class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-3 rounded flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+                NEW OUTBREAK REPORT
+            </button>
+</div>
+<footer class="border-t border-outline-variant mt-4">
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">SETTINGS</span>
+</a>
+<a class="text-on-surface-variant px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined text-error">logout</span>
+<span class="font-label-caps text-label-caps">LOGOUT</span>
+</a>
+</footer>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width min-h-screen flex flex-col">
+<!-- Header -->
+<header class="h-16 bg-surface-bright border-b border-outline-variant flex items-center justify-between px-lg sticky top-0 z-40">
+<h1 class="font-headline-md text-headline-md font-bold text-primary uppercase tracking-tight">
+                Clinical Oversight & Diagnostic Queue
+            </h1>
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-end mr-4">
+<span class="font-label-caps text-label-caps text-primary">DR. SARAH JENKINS</span>
+<span class="text-[10px] text-on-surface-variant">SENIOR EPIDEMIOLOGIST</span>
+</div>
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a veterinarian in her 40s wearing a clean white clinical coat and a stethoscope around her neck. The background is a brightly lit, sterile laboratory setting with soft blue and white highlights. The lighting is crisp and modern, emphasizing professional competence and a high-trust institutional aesthetic consistent with a public health portal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKXQmOrZQt0W_9Dwtup0yKAkisGbLaVxBGcY8Qz-NA_0yTWSjmgwJ1XmPRdN0uzdnnDRab1OiMEQhAZcFNWcR6_rWmMzC5K7D6Da1yeJDy0Mb00sBeKpoW3AlCFogMX2m1qluXmji_su7lHzWVphfl15YmFjBCz6VXlTdfkUM6ekZyGmHZUsQLFBlFEuxwaq8CrsUuj2aU12sGMW30943HMMyhjjm9NwUaDQIP3IGTc50sFOgHiJlngm7YkuPP1gv8XDNguAMJpeg"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content Grid -->
+<div class="p-lg grid grid-cols-12 gap-gutter max-w-screen-2xl mx-auto w-full">
+<!-- 1. Pending Movement Permits (Table Section) -->
+<section class="col-span-12 lg:col-span-8 bg-surface-bright border border-outline-variant rounded-lg overflow-hidden clinical-shadow">
+<div class="px-md py-3 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<h2 class="font-headline-md text-[16px] text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+                        PENDING MOVEMENT PERMITS
+                    </h2>
+<span class="font-label-caps text-[10px] bg-primary-container text-on-primary-container px-2 py-1 rounded">14 PENDING</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-md border-collapse zebra-table">
+<thead>
+<tr class="bg-surface-container-high text-on-surface-variant">
+<th class="px-4 py-3 font-label-caps text-label-caps">REQUEST ID</th>
+<th class="px-4 py-3 font-label-caps text-label-caps">ORIGIN FARM</th>
+<th class="px-4 py-3 font-label-caps text-label-caps">DESTINATION</th>
+<th class="px-4 py-3 font-label-caps text-label-caps">SPECIES</th>
+<th class="px-4 py-3 font-label-caps text-label-caps">HEALTH STATUS</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="text-[13px]">
+<tr class="border-b border-outline-variant transition-colors hover:bg-surface-container">
+<td class="px-4 py-3 font-data-mono">#PRM-4402</td>
+<td class="px-4 py-3">Green Valley (Zone-A)</td>
+<td class="px-4 py-3">Interstate Feedlot</td>
+<td class="px-4 py-3">Bovine (Beef)</td>
+<td class="px-4 py-3">
+<span class="font-label-caps text-[10px] px-2 py-0.5 rounded bg-tertiary text-on-tertiary">VERIFIED</span>
+</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-primary hover:text-primary-container" title="Approve"><span class="material-symbols-outlined">check_circle</span></button>
+<button class="text-error hover:opacity-70" title="Reject"><span class="material-symbols-outlined">cancel</span></button>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant transition-colors hover:bg-surface-container">
+<td class="px-4 py-3 font-data-mono">#PRM-8911</td>
+<td class="px-4 py-3">Blue Ridge Holding</td>
+<td class="px-4 py-3">Central Abattoir</td>
+<td class="px-4 py-3">Porcine</td>
+<td class="px-4 py-3">
+<span class="font-label-caps text-[10px] px-2 py-0.5 rounded bg-secondary text-on-secondary">PENDING LAB</span>
+</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-primary hover:text-primary-container"><span class="material-symbols-outlined">check_circle</span></button>
+<button class="text-error hover:opacity-70"><span class="material-symbols-outlined">cancel</span></button>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant transition-colors hover:bg-surface-container">
+<td class="px-4 py-3 font-data-mono">#PRM-2234</td>
+<td class="px-4 py-3">Highlands Dairy</td>
+<td class="px-4 py-3">County Market</td>
+<td class="px-4 py-3">Bovine (Dairy)</td>
+<td class="px-4 py-3">
+<span class="font-label-caps text-[10px] px-2 py-0.5 rounded bg-error text-on-error">FLAGGED</span>
+</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-primary opacity-30 cursor-not-allowed"><span class="material-symbols-outlined">check_circle</span></button>
+<button class="text-error hover:opacity-70"><span class="material-symbols-outlined">cancel</span></button>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant transition-colors hover:bg-surface-container">
+<td class="px-4 py-3 font-data-mono">#PRM-7709</td>
+<td class="px-4 py-3">East Coast Swine</td>
+<td class="px-4 py-3">Export Hub B</td>
+<td class="px-4 py-3">Porcine</td>
+<td class="px-4 py-3">
+<span class="font-label-caps text-[10px] px-2 py-0.5 rounded bg-tertiary text-on-tertiary">VERIFIED</span>
+</td>
+<td class="px-4 py-3 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="text-primary hover:text-primary-container"><span class="material-symbols-outlined">check_circle</span></button>
+<button class="text-error hover:opacity-70"><span class="material-symbols-outlined">cancel</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 bg-surface-container-low text-center border-t border-outline-variant">
+<button class="font-label-caps text-label-caps text-primary hover:underline">VIEW ALL PENDING PERMITS (14)</button>
+</div>
+</section>
+<!-- 2. Diagnostic Labs Queue -->
+<section class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-surface-bright border border-outline-variant rounded-lg clinical-shadow h-full flex flex-col">
+<div class="px-md py-3 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h2 class="font-headline-md text-[16px] text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">biotech</span>
+                            LABS QUEUE
+                        </h2>
+<button class="material-symbols-outlined text-outline">refresh</button>
+</div>
+<div class="p-md space-y-3 flex-1 overflow-y-auto max-h-[400px]">
+<!-- Lab Result Card -->
+<div class="p-3 border border-outline-variant rounded bg-white hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">SERIAL: LAB-992-B</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-error-container text-on-error-container font-bold">URGENT</span>
+</div>
+<h3 class="font-bold text-sm text-on-surface">Avian Influenza Panel</h3>
+<p class="text-[12px] text-on-surface-variant mt-1">Submitter: District 4 Lab Service</p>
+<div class="mt-3 pt-3 border-t border-outline-variant flex justify-between items-center">
+<span class="text-[11px] font-data-mono text-outline">28 Oct 2023 | 14:20</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
+</div>
+</div>
+<!-- Lab Result Card -->
+<div class="p-3 border border-outline-variant rounded bg-white hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">SERIAL: LAB-401-X</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-bold">ROUTINE</span>
+</div>
+<h3 class="font-bold text-sm text-on-surface">Brucellosis Blood Screening</h3>
+<p class="text-[12px] text-on-surface-variant mt-1">Submitter: Regional Vet Institute</p>
+<div class="mt-3 pt-3 border-t border-outline-variant flex justify-between items-center">
+<span class="text-[11px] font-data-mono text-outline">28 Oct 2023 | 11:05</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
+</div>
+</div>
+<!-- Lab Result Card -->
+<div class="p-3 border border-outline-variant rounded bg-white hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">SERIAL: LAB-112-C</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-bold">ROUTINE</span>
+</div>
+<h3 class="font-bold text-sm text-on-surface">Mastitis Culture Summary</h3>
+<p class="text-[12px] text-on-surface-variant mt-1">Submitter: Highlands Dairy Ops</p>
+<div class="mt-3 pt-3 border-t border-outline-variant flex justify-between items-center">
+<span class="text-[11px] font-data-mono text-outline">27 Oct 2023 | 16:45</span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Health Records Entry (Form Section) -->
+<section class="col-span-12 lg:col-span-7 bg-[#F0F5FA] border-l-4 border-primary rounded clinical-shadow p-lg">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Health Records Entry</h2>
+<p class="text-sm text-on-surface-variant">Submit new clinical observations to the global registry.</p>
+</div>
+</div>
+<form class="grid grid-cols-2 gap-4">
+<div class="col-span-1">
+<label class="block font-label-caps text-[11px] text-on-surface-variant mb-1">FARM IDENTIFIER (RF-ID)</label>
+<input class="w-full bg-white border border-outline-variant rounded p-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all outline-none" placeholder="e.g. US-TX-9921" type="text"/>
+</div>
+<div class="col-span-1">
+<label class="block font-label-caps text-[11px] text-on-surface-variant mb-1">DATE OF EXAMINATION</label>
+<input class="w-full bg-white border border-outline-variant rounded p-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all outline-none" type="date"/>
+</div>
+<div class="col-span-2">
+<label class="block font-label-caps text-[11px] text-on-surface-variant mb-1">CLINICAL OBSERVATIONS</label>
+<textarea class="w-full bg-white border border-outline-variant rounded p-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all outline-none resize-none" placeholder="Describe symptoms, vaccination status, or diagnostic findings..." rows="3"></textarea>
+</div>
+<div class="col-span-1">
+<label class="block font-label-caps text-[11px] text-on-surface-variant mb-1">PRIMARY CONCERN</label>
+<select class="w-full bg-white border border-outline-variant rounded p-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all outline-none">
+<option>Routine Checkup</option>
+<option>Respiratory Illness</option>
+<option>Skin Lesions</option>
+<option>Sudden Mortality</option>
+</select>
+</div>
+<div class="col-span-1 flex items-end">
+<button class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-2 rounded shadow-sm hover:brightness-110 active:scale-[0.98] transition-all" type="button">
+                            COMMIT TO REGISTRY
+                        </button>
+</div>
+</form>
+</section>
+<!-- 4. Disease Reporting (Coming Soon) -->
+<section class="col-span-12 lg:col-span-5 relative overflow-hidden rounded-lg border border-outline-variant clinical-shadow bg-white">
+<div class="p-lg">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-error text-[28px]">warning</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Epidemiological Forecasting</h2>
+</div>
+<div class="space-y-4 blur-[3px] select-none pointer-events-none opacity-40">
+<div class="h-4 bg-surface-container rounded w-full"></div>
+<div class="h-4 bg-surface-container rounded w-3/4"></div>
+<div class="h-4 bg-surface-container rounded w-5/6"></div>
+<div class="grid grid-cols-3 gap-2 mt-6">
+<div class="h-16 bg-surface-container-high rounded"></div>
+<div class="h-16 bg-surface-container-high rounded"></div>
+<div class="h-16 bg-surface-container-high rounded"></div>
+</div>
+</div>
+</div>
+<!-- Coming Soon Overlay -->
+<div class="absolute inset-0 bg-primary/5 flex items-center justify-center backdrop-blur-[1px]">
+<div class="bg-primary text-on-primary px-6 py-4 rounded-lg clinical-shadow flex flex-col items-center">
+<span class="material-symbols-outlined text-[40px] mb-2">science</span>
+<span class="font-label-caps text-label-caps tracking-widest text-[14px]">COMING SOON</span>
+<p class="text-[12px] opacity-80 mt-1 font-body-md">AI-Driven Outbreak Prediction v2.0</p>
+</div>
+</div>
+</section>
+<!-- Bottom Data Insights Row -->
+<div class="col-span-12 grid grid-cols-1 md:grid-cols-4 gap-gutter mt-2">
+<div class="bg-surface-container-low border border-outline-variant p-md rounded flex items-center gap-4">
+<div class="p-3 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div>
+<div class="text-[24px] font-bold font-display-lg leading-none">98.2%</div>
+<div class="text-[10px] font-label-caps text-outline-variant">SYSTEM UPTIME</div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-md rounded flex items-center gap-4">
+<div class="p-3 rounded-full bg-tertiary/10 text-tertiary">
+<span class="material-symbols-outlined">database</span>
+</div>
+<div>
+<div class="text-[24px] font-bold font-display-lg leading-none">1.2M</div>
+<div class="text-[10px] font-label-caps text-outline-variant">RECORDS INDEXED</div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-md rounded flex items-center gap-4">
+<div class="p-3 rounded-full bg-secondary/10 text-secondary">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<div>
+<div class="text-[24px] font-bold font-display-lg leading-none">442</div>
+<div class="text-[10px] font-label-caps text-outline-variant">ACTIVE LAB NODES</div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-md rounded flex items-center gap-4">
+<div class="p-3 rounded-full bg-error/10 text-error">
+<span class="material-symbols-outlined">notification_important</span>
+</div>
+<div>
+<div class="text-[24px] font-bold font-display-lg leading-none">03</div>
+<div class="text-[10px] font-label-caps text-outline-variant">ACTIVE ALERTS</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Technical Status Bar -->
+<footer class="mt-auto px-lg py-3 bg-surface-container-highest border-t border-outline-variant flex items-center justify-between text-[11px] font-data-mono text-on-surface-variant">
+<div class="flex items-center gap-6">
+<span>PORTAL VERSION: 4.1.0-STABLE</span>
+<span>SECURE SESSION: <span class="text-tertiary">ACTIVE</span></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span>REGIONAL SYNC COMPLETE: DISTRICT 04</span>
+</div>
+</footer>
+</main>
+<script>
+        // Simple Micro-interaction: Approve Permit
+        document.querySelectorAll('button[title="Approve"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                row.style.transition = 'all 0.5s ease';
+                row.style.backgroundColor = '#ecfdf5';
+                setTimeout(() => {
+                    row.style.opacity = '0.5';
+                }, 300);
+            });
+        });
+
+        // Search Bar Simulation (Placeholder)
+        window.addEventListener('keydown', (e) => {
+            if (e.metaKey && e.key === 'k') {
+                e.preventDefault();
+                alert('Command Palette: Search for RFID, Permit ID, or Lab Result...');
+            }
+        });
+    </script>
+</body></html>
