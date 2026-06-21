@@ -150,17 +150,58 @@ export default function PublicLedger() {
         0,
       );
 
-      // 2. SEND TO PYTHON ML ENGINE
-      const response = await fetch(`${API_URL}/calculate-risk`, {
+      // 2. GENERATE 14-DAY SEQUENCE FOR V2 ML ENGINE
+      const sequence = [];
+      const now = new Date();
+      for (let i = 13; i >= 0; i--) {
+        const targetDate = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        let d_safe = 0, d_mild = 0, d_dangerous = 0, d_pop = 0, d_logs = 0;
+        
+        transactions.forEach((tx) => {
+          if (new Date(tx.timestamp) <= targetDate) {
+            const qty = Number(tx.quantity || 0);
+            d_pop += qty;
+            if (tx.severity === "safe") d_safe += qty;
+            else if (tx.severity === "mild") d_mild += qty;
+            else if (tx.severity === "dangerous") d_dangerous += qty;
+            
+            const lookupId = tx.batchId || tx._id;
+            if (mergedCounts[lookupId]) {
+              d_logs += Number(mergedCounts[lookupId]);
+            }
+          }
+        });
+        
+        const d_total = d_safe + d_mild + d_dangerous;
+        const sR = d_total > 0 ? d_safe / d_total : 0;
+        const mR = d_total > 0 ? d_mild / d_total : 0;
+        const dR = d_total > 0 ? d_dangerous / d_total : 0;
+        const pF = Math.min(d_pop / 500, 2);
+        const lF = d_total > 0 ? Math.min((d_logs / d_total) / 3, 1.5) : 0;
+        
+        sequence.push({ sR, mR, dR, pF, lF });
+      }
+
+      const curr_total = safeCount + mildCount + dangerousCount;
+      const snapshot = {
+        sR: curr_total > 0 ? safeCount / curr_total : 0,
+        mR: curr_total > 0 ? mildCount / curr_total : 0,
+        dR: curr_total > 0 ? dangerousCount / curr_total : 0,
+        pF: Math.min(totalPop / 500, 2),
+        lF: curr_total > 0 ? Math.min((totalMedicalLogs / curr_total) / 3, 1.5) : 0
+      };
+
+      const payload = {
+        snapshot,
+        sequence,
+        safeCount, mildCount, dangerousCount, totalPop, totalMedicalLogs
+      };
+
+      // 3. SEND TO API
+      const response = await fetch(`${API_URL}/risk/v2`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          safeCount,
-          mildCount,
-          dangerousCount,
-          totalPop,
-          totalMedicalLogs,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const riskData = await response.json();
@@ -172,15 +213,17 @@ export default function PublicLedger() {
 
       await new Promise((resolve) => setTimeout(resolve, 800)); // UI delay
 
-      // 3. Update UI with backend results
+      // 4. Update UI with backend results
       setFarmRisk({
-        score: riskData.score,
-        level: riskData.level,
-        color: riskData.color,
-        description: riskData.description,
-        advice: riskData.advice,
-        model_status: riskData.model_status,
-        ml_active: riskData.ml_active,
+        ...riskData,
+        // Provide defaults for V1 fallback
+        score: riskData.combined_score ?? riskData.score,
+        level: riskData.risk_level ?? riskData.level,
+        color: (riskData.combined_score ?? riskData.score) >= 70 ? "text-red-600" : (riskData.combined_score ?? riskData.score) >= 35 ? "text-amber-600" : "text-emerald-500",
+        description: riskData.description || "Farm health has been successfully processed by the advanced dual-model AI.",
+        advice: riskData.advice || "Review the detailed metrics for anomaly and trajectory risks.",
+        model_status: riskData.model_status || (riskData.combined_score !== undefined ? "Dual-Model AI Active" : "Heuristic Active"),
+        is_v2: riskData.combined_score !== undefined,
         totalPop,
         safeCount,
         mildCount,
@@ -519,13 +562,20 @@ export default function PublicLedger() {
           <div className="bg-slate-900 w-full max-w-2xl rounded-[3rem] p-8 shadow-2xl relative overflow-hidden border border-white/10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
             <div className="relative z-10">
-              <div className="flex justify-between items-start mb-8">
+              <div className="flex justify-between items-start mb-6">
                 <div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 mb-2">
                     Farm Health Security Index
                   </h3>
-                  <div className="inline-block px-3 py-1 bg-slate-800 text-slate-400 text-[9px] uppercase tracking-widest rounded-full mb-3 border border-slate-700">
-                    🧠 {farmRisk.model_status}
+                  <div className="flex gap-2 mb-3">
+                    <div className="inline-block px-3 py-1 bg-slate-800 text-slate-400 text-[9px] uppercase tracking-widest rounded-full border border-slate-700">
+                      🧠 {farmRisk.model_status}
+                    </div>
+                    {farmRisk.is_v2 && (
+                      <div className="inline-block px-3 py-1 bg-purple-900/50 text-purple-300 text-[9px] uppercase tracking-widest rounded-full border border-purple-500/30">
+                        🧪 Data Source: Synthetic
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-baseline gap-3">
                     <span
@@ -546,20 +596,41 @@ export default function PublicLedger() {
                 </button>
               </div>
 
+              {farmRisk.is_v2 && (
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem]">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                      RF Score (Anomaly)
+                    </p>
+                    <p className="text-3xl font-black text-emerald-400">
+                      {farmRisk.rf_score}%
+                    </p>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 p-5 rounded-[1.5rem]">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                      BiLSTM Score (Trajectory)
+                    </p>
+                    <p className="text-3xl font-black text-indigo-400">
+                      {farmRisk.bilstm_score}%
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem]">
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
-                    Total Population
+                    Population
                   </p>
-                  <p className="text-3xl font-black text-white">
+                  <p className="text-2xl font-black text-white">
                     {farmRisk.totalPop}
                   </p>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem]">
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
                     Medical Logs
                   </p>
-                  <p className="text-3xl font-black text-white">
+                  <p className="text-2xl font-black text-white">
                     {farmRisk.totalMedicalLogs}
                   </p>
                 </div>
@@ -567,7 +638,7 @@ export default function PublicLedger() {
 
               {/* FARMER FRIENDLY DESCRIPTIVE TEXT */}
               <div className="space-y-4 mb-8">
-                <div className="bg-white/5 border-l-4 border-emerald-500 p-4 rounded-r-2xl">
+                <div className="bg-white/5 border-l-4 border-emerald-500 p-4 rounded-r-xl">
                   <h4 className="text-white font-black text-sm uppercase mb-1">
                     Current Status
                   </h4>
@@ -576,7 +647,7 @@ export default function PublicLedger() {
                   </p>
                 </div>
                 <div
-                  className={`bg-white/5 border-l-4 ${farmRisk.score >= 35 ? "border-amber-500" : "border-blue-500"} p-4 rounded-r-2xl`}
+                  className={`bg-white/5 border-l-4 ${farmRisk.score >= 35 ? "border-amber-500" : "border-blue-500"} p-4 rounded-r-xl`}
                 >
                   <h4 className="text-white font-black text-sm uppercase mb-1">
                     Recommended Action

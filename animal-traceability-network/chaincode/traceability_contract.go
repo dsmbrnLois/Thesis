@@ -169,10 +169,10 @@ func (s *SmartContract) TransferAsset(ctx contractapi.TransactionContextInterfac
 		animal.Status = "Exported"
 		animal.Location = "Exported to: " + newLocation
 		animal.Username = "EXIT"
-	} else if transferType == "Cull" { // --- NEW: CULL WORKFLOW ---
+	} else if transferType == "Cull" {
 		animal.Status = "Culled"
 		animal.Location = "Disposed: " + newLocation
-		animal.Username = "EXIT" // Burn the asset
+		animal.Username = "EXIT" 
 	} else {
 		return fmt.Errorf("invalid transfer type: %s", transferType)
 	}
@@ -207,7 +207,7 @@ func (s *SmartContract) SplitAndTransferAsset(ctx contractapi.TransactionContext
 	var parent AnimalTransaction
 	json.Unmarshal(parentBytes, &parent)
 
-	// --- NEW: BYPASS HEALTH CHECK FOR CULLING ---
+	
 	if transferType != "Cull" && parent.Severity != "safe" {
 		return fmt.Errorf("transport rejected: Parent is marked as '%s' (Must be 'safe' unless Culling)", parent.Severity)
 	}
@@ -247,7 +247,7 @@ func (s *SmartContract) SplitAndTransferAsset(ctx contractapi.TransactionContext
 		child.Username = "EXIT"
 		child.Status = "Exported"
 		child.Location = "Exported to: " + newLocation
-	} else if transferType == "Cull" { // --- NEW: CULL WORKFLOW ---
+	} else if transferType == "Cull" {
 		child.Username = "EXIT"
 		child.Status = "Culled"
 		child.Location = "Disposed: " + newLocation
@@ -256,7 +256,6 @@ func (s *SmartContract) SplitAndTransferAsset(ctx contractapi.TransactionContext
 	// Update Parent
 	parent.Quantity = parent.Quantity - transferQty
 	parent.TargetOwner = ""
-	// If a cull was partial, the parent remains sick! Do not overwrite health status.
 	parent.LastUpdatedBy = clientMSPID
 	parent.Timestamp = currentTime
 

@@ -1,0 +1,16 @@
+{
+  "data_source": "synthetic",
+  "model": "RandomForestClassifier",
+  "metrics": {
+    "accuracy": 0.9623611111111111,
+    "precision": 0.5454545454545454,
+    "recall": 0.6513157894736842
+  },
+  "feature_importances": {
+    "sR": 0.16134329277105522,
+    "mR": 0.13566762728002715,
+    "dR": 0.31289127630829516,
+    "pF": 0.16115098295389,
+    "lF": 0.22894682068673242
+  }
+}

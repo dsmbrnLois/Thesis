@@ -42,3 +42,4 @@ wallet/
 
 # Ignore Go Chaincode Dependencies
 vendor/
+context/*
