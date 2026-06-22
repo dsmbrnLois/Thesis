@@ -20,7 +20,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Le
 function MapResizer() {
   const map = useMap();
   useEffect(() => {
-    // Small delay to ensure the DOM has finished its transition
     const timer = setTimeout(() => {
       map.invalidateSize();
     }, 500);
@@ -192,23 +191,16 @@ export default function AnimalMovement() {
   };
 
   const getColor = (stats) => {
-    if (stats.critical > 0) return '#ef4444'; 
-    if (stats.mild > 0) return '#f97316';     
-    return '#10b981';                         
+    if (stats.critical > 0) return '#b3261e'; // ADTS error
+    if (stats.mild > 0) return '#f97316';     // Warning
+    return '#146c2e';                         // ADTS tertiary (green)
   };
 
   if (loading) return (
-    <div className="fixed inset-0 flex items-center justify-center bg-slate-50/30 backdrop-blur-sm z-[1000]">
-      <div className="bg-white/80 p-8 sm:p-10 rounded-[2.5rem] shadow-2xl border border-white flex flex-col items-center">
-        <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-6">
-          <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
-          <div className="absolute inset-0 rounded-full border-4 border-t-green-600 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
-          </div>
-        </div>
-        <h2 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight uppercase">System Syncing</h2>
-        <p className="text-slate-500 font-bold text-xs mt-2 tracking-[0.2em] animate-pulse">
+    <div className="fixed inset-0 flex items-center justify-center bg-surface/50 backdrop-blur-sm z-[1000]">
+      <div className="bg-surface p-xl border border-outline-variant shadow-[0_2px_4px_rgba(28,43,58,0.08)] flex flex-col items-center">
+        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+        <p className="font-mono text-label-caps text-primary uppercase tracking-widest animate-pulse">
           Fetching Movement data...
         </p>
       </div>
@@ -216,132 +208,124 @@ export default function AnimalMovement() {
   );
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/10 min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-10 font-sans relative">
+    <div className="w-full bg-surface-container-lowest min-h-screen pt-16 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-10 font-sans relative">
       
-      {/* CENTERED DATE FILTER */}
-      <div className="max-w-7xl mx-auto mb-8 sm:mb-10 flex justify-center print:hidden">
-        <div className="w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-lg border border-slate-200/60 p-5 sm:p-6 flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6">
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-            <div className="bg-slate-100 p-1 rounded-xl sm:rounded-2xl flex gap-1">
+      {/* ── FILTER TAPE ── */}
+      <div className="max-w-7xl mx-auto mb-md flex justify-center print:hidden">
+        <div className="w-full bg-surface border border-outline-variant p-md flex flex-col lg:flex-row items-center justify-between gap-md">
+          <div className="flex flex-wrap items-center justify-center gap-md">
+            <div className="flex bg-surface-container-low border border-outline-variant rounded-sm p-1">
               <button 
                 onClick={() => setFilterMode("preset")}
-                className={`px-5 sm:px-6 py-2 rounded-lg sm:rounded-xl text-xs font-black uppercase transition-all ${filterMode === 'preset' ? 'bg-white shadow-sm text-green-600' : 'text-slate-400'}`}
+                className={`px-lg py-xs font-mono text-label-caps uppercase transition-colors ${filterMode === 'preset' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:text-primary'}`}
               >
-                Standard
+                STANDARD
               </button>
               <button 
                 onClick={() => setFilterMode("custom")}
-                className={`px-5 sm:px-6 py-2 rounded-lg sm:rounded-xl text-xs font-black uppercase transition-all ${filterMode === 'custom' ? 'bg-white shadow-sm text-green-600' : 'text-slate-400'}`}
+                className={`px-lg py-xs font-mono text-label-caps uppercase transition-colors ${filterMode === 'custom' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:text-primary'}`}
               >
-                Custom
+                CUSTOM
               </button>
             </div>
 
-            <div className={`flex gap-3 transition-all ${filterMode === 'custom' ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}>
+            <div className={`flex gap-sm transition-opacity ${filterMode === 'custom' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
               <select 
                 value={selectedMonth} 
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-green-500/20 text-sm sm:text-base"
+                className="bg-surface border border-outline-variant px-md py-xs font-mono text-label-caps text-on-surface outline-none focus:border-primary uppercase cursor-pointer"
               >
-                <option value="all">Full Year</option>
-                {MONTHS.map((m, i) => <option key={m} value={i}>{m}</option>)}
+                <option value="all">FULL YEAR</option>
+                {MONTHS.map((m, i) => <option key={m} value={i}>{m.toUpperCase()}</option>)}
               </select>
               <select 
                 value={selectedYear} 
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 font-bold text-slate-700 outline-none text-sm sm:text-base"
+                className="bg-surface border border-outline-variant px-md py-xs font-mono text-label-caps text-on-surface outline-none focus:border-primary cursor-pointer"
               >
                 {[currentYear, currentYear-1, currentYear-2].map(y => <option key={y} value={y}>{y}</option>)}
               </select>
             </div>
 
-            <div className={`flex items-center gap-3 transition-all ${filterMode === 'preset' ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}>
+            <div className={`flex items-center gap-sm transition-opacity ${filterMode === 'preset' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
               <input 
                 type="date" 
                 value={customStart}
                 onChange={(e) => setCustomStart(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 font-bold text-slate-700 outline-none text-sm sm:text-base"
+                className="bg-surface border border-outline-variant px-md py-xs font-mono text-data-mono text-on-surface outline-none focus:border-primary"
               />
-              <span className="text-slate-300 font-black text-sm">–</span>
+              <span className="text-on-surface-variant font-bold">—</span>
               <input 
                 type="date" 
                 value={customEnd}
                 onChange={(e) => setCustomEnd(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 sm:px-4 py-2 font-bold text-slate-700 outline-none text-sm sm:text-base"
+                className="bg-surface border border-outline-variant px-md py-xs font-mono text-data-mono text-on-surface outline-none focus:border-primary"
               />
             </div>
           </div>
 
           <button 
             onClick={handleReset}
-            className="text-slate-400 hover:text-red-500 font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-2 mt-3 lg:mt-0"
+            className="text-on-surface-variant hover:text-primary font-mono text-label-caps uppercase transition-colors flex items-center gap-1"
           >
-            <span>🔄</span> Reset
+            <span className="material-symbols-outlined text-[16px]">refresh</span> RESET
           </button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 sm:gap-8 lg:gap-12 items-stretch">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-lg items-stretch">
         
-        {/* SIDEBAR */}
-        <aside className="
-          w-full lg:w-[380px] xl:w-[420px] 
-          bg-white/95 backdrop-blur-md 
-          rounded-[2.5rem] sm:rounded-[3rem] 
-          border border-slate-200/80 
-          p-6 sm:p-8 lg:p-10 
-          shadow-xl 
-          lg:sticky lg:top-24 
-          h-fit flex flex-col transition-all z-20
-        ">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-2">Animal Movement</h1>
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-green-600">ADTS • Real-Time Traceability</p>
+        {/* ── SIDEBAR ── */}
+        <aside className="w-full lg:w-[400px] xl:w-[420px] bg-surface border border-outline-variant p-xl flex flex-col z-20">
+          <h1 className="font-display text-display-sm text-primary uppercase tracking-tight mb-1">
+            Animal Movement
+          </h1>
+          <p className="font-mono text-label-caps uppercase text-tertiary">ADTS • Real-Time Traceability</p>
 
-          <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-8 sm:mt-10">
-            <div className="bg-emerald-50 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-emerald-100 text-center">
-              <p className="text-[9px] sm:text-[10px] font-black uppercase text-emerald-700 mb-1">Healthy</p>
-              <p className="text-xl sm:text-2xl font-black text-emerald-800">{transactions.healthy.toLocaleString()}</p>
+          <div className="grid grid-cols-3 gap-0 border border-outline-variant mt-lg">
+            <div className="bg-tertiary-fixed/20 p-md text-center border-r border-outline-variant">
+              <p className="font-mono text-label-caps text-on-surface-variant uppercase mb-1">Healthy</p>
+              <p className="font-display text-headline-sm text-tertiary">{transactions.healthy.toLocaleString()}</p>
             </div>
-            <div className="bg-red-50 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-red-100 text-center">
-              <p className="text-[9px] sm:text-[10px] font-black uppercase text-red-700 mb-1">At-Risk</p>
-              <p className="text-xl sm:text-2xl font-black text-red-800">{transactions.sick.toLocaleString()}</p>
+            <div className="bg-error-container/30 p-md text-center border-r border-outline-variant">
+              <p className="font-mono text-label-caps text-error uppercase mb-1">At-Risk</p>
+              <p className="font-display text-headline-sm text-error">{transactions.sick.toLocaleString()}</p>
             </div>
-            <div className="bg-amber-50 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-amber-100 text-center">
-              <p className="text-[9px] sm:text-[10px] font-black uppercase text-amber-700 mb-1">Pending</p>
-              <p className="text-xl sm:text-2xl font-black text-amber-800">{transactions.unverified.toLocaleString()}</p>
+            <div className="bg-surface-container-low p-md text-center">
+              <p className="font-mono text-label-caps text-on-surface-variant uppercase mb-1">Pending</p>
+              <p className="font-display text-headline-sm text-on-surface">{transactions.unverified.toLocaleString()}</p>
             </div>
           </div>
 
-          <div className="mt-6 sm:mt-8 bg-slate-50/80 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200 space-y-3">
-            <div className="flex justify-between items-center px-3 py-2 bg-white/60 rounded-xl text-xs font-bold uppercase text-slate-600">
-              <span>Exported</span>
-              <span className="text-base sm:text-lg text-slate-800">{transactions.logistics.exported.toLocaleString()}</span>
+          <div className="mt-md bg-surface-container-lowest border border-outline-variant flex flex-col divide-y divide-outline-variant">
+            <div className="flex justify-between items-center p-md">
+              <span className="font-mono text-label-caps text-on-surface-variant uppercase">Exported</span>
+              <span className="font-mono text-data-mono text-on-surface font-bold">{transactions.logistics.exported.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between items-center px-3 py-2 bg-white/60 rounded-xl text-xs font-bold uppercase text-red-700">
-              <span>Slaughtered</span>
-              <span className="text-base sm:text-lg text-red-800">{transactions.logistics.slaughtered.toLocaleString()}</span>
+            <div className="flex justify-between items-center p-md bg-error-container/10">
+              <span className="font-mono text-label-caps text-error uppercase">Slaughtered</span>
+              <span className="font-mono text-data-mono text-error font-bold">{transactions.logistics.slaughtered.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between items-center px-3 py-2 bg-white/60 rounded-xl text-xs font-bold uppercase text-amber-600">
-              <span>Verified Ratio</span>
-              <span className="text-base sm:text-lg text-amber-700">{transactions.verifiedRatio}</span>
+            <div className="flex justify-between items-center p-md">
+              <span className="font-mono text-label-caps text-on-surface-variant uppercase">Verified Ratio</span>
+              <span className="font-mono text-data-mono text-primary font-bold">{transactions.verifiedRatio}</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 mt-6 sm:mt-8 p-5 sm:p-6 shadow-sm">
-            <h3 className="text-sm sm:text-base font-black uppercase tracking-widest text-slate-500 mb-4 sm:mb-6 text-center">
-              Livestock Species Distribution
+          <div className="bg-surface border border-outline-variant mt-lg p-md">
+            <h3 className="font-mono text-label-caps uppercase text-on-surface-variant mb-md text-center border-b border-outline-variant pb-2">
+              Species Distribution
             </h3>
-            <div className="h-56 sm:h-64">
+            <div className="h-56">
               {transactions?.speciesCounts ? (
                 <Pie
                   data={{
                     labels: SPECIES_LIST,
                     datasets: [{
                       data: SPECIES_LIST.map(s => transactions.speciesCounts[s] || 0),
-                      backgroundColor: ["#f59e0b", "#3b82f6", "#ef4444", "#06b6d4", "#10b981", "#6366f1"],
-                      hoverBackgroundColor: ["#d97706", "#2563eb", "#dc2626", "#0891b2", "#059669", "#4f46e5"],
-                      borderWidth: 2,
-                      borderColor: '#ffffff',
+                      backgroundColor: ["#004a77", "#146c2e", "#b3261e", "#f97316", "#60a5fa", "#9333ea"],
+                      borderWidth: 1,
+                      borderColor: '#1a1f24',
                     }]
                   }}
                   options={{
@@ -354,128 +338,76 @@ export default function AnimalMovement() {
                         labels: {
                           usePointStyle: true,
                           padding: 12,
-                          font: { size: 10, weight: 'bold' },
-                          color: '#475569'
+                          font: { family: 'monospace', size: 10 },
+                          color: '#bec8cb'
                         }
                       }
                     }
                   }}
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-slate-400 font-bold uppercase text-xs">
-                  Synchronizing Species Data...
+                <div className="flex items-center justify-center h-full text-outline font-mono text-label-caps uppercase">
+                  Synchronizing...
                 </div>
               )}
             </div>
           </div>
 
-          <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
-            <button onClick={() => navigate("/home")} className="px-8 sm:px-10 py-4 sm:py-5 bg-slate-800 text-white rounded-2xl font-black text-base sm:text-lg transition-all shadow-xl hover:bg-slate-700 active:scale-95 w-full sm:w-auto">
-            ← Return to Home
+          <div className="mt-auto pt-lg">
+            <button onClick={() => navigate("/home")} className="w-full py-md border border-outline-variant text-on-surface font-mono text-label-caps uppercase hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              Return to Home
             </button>
           </div>
         </aside>
 
-        {/* MAIN CONTENT AREA */}
-        <div className="flex-1 flex flex-col gap-6 sm:gap-8">
-          <div className="group bg-white rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 shadow-xl p-6 sm:p-8 lg:p-10 flex flex-col flex-grow min-h-[500px] sm:min-h-[750px] relative z-0">
-            <div className="mb-6 sm:mb-8 px-2">
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900">Livestock Distribution Map</h2>
-              <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mt-2">
+        {/* ── MAIN CONTENT AREA ── */}
+        <div className="flex-1 flex flex-col gap-lg">
+          <div className="bg-surface border border-outline-variant p-xl flex flex-col flex-grow min-h-[500px] sm:min-h-[750px] relative z-0">
+            <div className="mb-md">
+              <h2 className="font-display text-headline-lg text-primary uppercase">Livestock Distribution Map</h2>
+              <p className="font-mono text-label-caps text-on-surface-variant uppercase mt-1">
                 Real-Time Health Monitoring
               </p>
             </div>
 
-            {/* MAP CONTAINER - Fixed height to ensure tiles render */}
-            <div className="rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-inner flex-grow relative z-0 h-[450px] sm:h-[600px] w-full">
+            {/* MAP CONTAINER */}
+            <div className="border border-outline-variant bg-surface-container-lowest flex-grow relative z-0 h-[450px] sm:h-[600px] w-full">
               <MapContainer
                 center={[14.311, 121.11]}
                 zoom={11.5}
                 zoomControl={false}
                 style={{ height: "100%", width: "100%" }}
               >
-                {/* LEAFLET HEALTH LEGEND */}
+                {/* ── LEAFLET HEALTH LEGEND ── */}
                 <div
-                  className="
-                    absolute 
-                    top-4 
-                    left-4 
-                    bg-white/90 
-                    backdrop-blur-xl
-                    px-4 
-                    py-4
-                    rounded-3xl
-                    shadow-[0_8px_30px_rgba(0,0,0,0.12)]
-                    border border-white/70
-                    z-[1000]
-                    pointer-events-none
-                    min-w-[220px]
-                  "
+                  className="absolute top-md left-md bg-surface border border-outline-variant p-md z-[1000] pointer-events-none min-w-[200px]"
                 >
-                  {/* Header */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></div>
-
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
-                      Health Legend
-                    </p>
+                  <div className="flex items-center gap-2 mb-sm pb-2 border-b border-outline-variant">
+                    <span className="material-symbols-outlined text-[14px] text-primary">map</span>
+                    <p className="font-mono text-label-caps uppercase text-primary">Health Legend</p>
                   </div>
-
-                  {/* Legend Items */}
-                  <div className="space-y-2.5">
-
-                    {/* Healthy */}
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="absolute inset-0 rounded-full bg-[#10b981] blur-[5px] opacity-40"></div>
-                          <div className="relative w-3.5 h-3.5 rounded-full bg-[#10b981] border border-white shadow-md"></div>
-                        </div>
-
-                        <span className="text-xs font-extrabold text-slate-700">
-                          Healthy
-                        </span>
+                  <div className="space-y-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-sm bg-[#146c2e] border border-outline-variant"></div>
+                        <span className="font-mono text-label-caps text-on-surface uppercase">Healthy</span>
                       </div>
-
-                      <span className="text-[10px] font-bold text-slate-400">
-                        No Cases
-                      </span>
+                      <span className="font-mono text-[9px] text-on-surface-variant uppercase">0 Cases</span>
                     </div>
-
-                    {/* Mild */}
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="absolute inset-0 rounded-full bg-[#f97316] blur-[5px] opacity-40"></div>
-                          <div className="relative w-3.5 h-3.5 rounded-full bg-[#f97316] border border-white shadow-md"></div>
-                        </div>
-
-                        <span className="text-xs font-extrabold text-slate-700">
-                          Warning
-                        </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-sm bg-[#f97316] border border-outline-variant"></div>
+                        <span className="font-mono text-label-caps text-on-surface uppercase">Warning</span>
                       </div>
-
-                      <span className="text-[10px] font-bold text-slate-400">
-                        Mild Cases
-                      </span>
+                      <span className="font-mono text-[9px] text-on-surface-variant uppercase">Mild</span>
                     </div>
-
-                    {/* Critical */}
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="absolute inset-0 rounded-full bg-[#ef4444] blur-[5px] opacity-40"></div>
-                          <div className="relative w-3.5 h-3.5 rounded-full bg-[#ef4444] border border-white shadow-md"></div>
-                        </div>
-
-                        <span className="text-xs font-extrabold text-slate-700">
-                          Critical
-                        </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-sm bg-[#b3261e] border border-outline-variant"></div>
+                        <span className="font-mono text-label-caps text-error uppercase">Critical</span>
                       </div>
-
-                      <span className="text-[10px] font-bold text-slate-400">
-                        ASF / Flu / FMD
-                      </span>
+                      <span className="font-mono text-[9px] text-error uppercase">Pathogen</span>
                     </div>
                   </div>
                 </div>
@@ -483,7 +415,6 @@ export default function AnimalMovement() {
 
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 
-                {/* REPLACED GEOJSON WITH PREMIUM MODERN COLOR-CODED PINS */}
                 {Object.entries(BARANGAY_COORDINATES).map(([brgyName, coords]) => {
                   const currentStats = barangayMapStats[brgyName] || {
                     total: 0,
@@ -495,104 +426,32 @@ export default function AnimalMovement() {
 
                   const markerColor = getColor(currentStats);
 
-                  // Premium glossy animated map pin
+                  // Flat clinical pin
                   const customIcon = L.divIcon({
                     html: `
                       <div style="
-                        position: relative;
-                        width: 52px;
-                        height: 52px;
+                        width: 24px;
+                        height: 24px;
+                        background-color: ${markerColor};
+                        border: 2px solid #ffffff;
+                        box-shadow: 0 0 0 1px #1a1f24;
+                        transform: rotate(45deg);
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        transform: translateY(-2px);
                       ">
-
-                        <!-- Pulse Glow -->
                         <div style="
-                          position: absolute;
-                          width: 26px;
-                          height: 26px;
-                          background: ${markerColor};
-                          border-radius: 999px;
-                          opacity: 0.25;
-                          filter: blur(8px);
-                          animation: pulseMarker 2s infinite;
+                          width: 8px;
+                          height: 8px;
+                          background-color: #ffffff;
+                          border-radius: 50%;
                         "></div>
-
-                        <!-- Main Pin -->
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 64 64"
-                          style="
-                            width: 52px;
-                            height: 52px;
-                            overflow: visible;
-                            filter:
-                              drop-shadow(0px 5px 8px rgba(0,0,0,0.35))
-                              drop-shadow(0px 1px 2px rgba(255,255,255,0.25));
-                          "
-                        >
-
-                          <!-- Pin Shape -->
-                          <path
-                            d="M32 2C20.4 2 11 11.4 11 23c0 15.4 18.2 34.8 20 36.7a1.5 1.5 0 002.1 0C34.8 57.8 53 38.4 53 23 53 11.4 43.6 2 32 2z"
-                            fill="${markerColor}"
-                            stroke="#ffffff"
-                            stroke-width="2.5"
-                          />
-
-                          <!-- Glossy Overlay -->
-                          <ellipse
-                            cx="26"
-                            cy="18"
-                            rx="12"
-                            ry="7"
-                            fill="rgba(255,255,255,0.35)"
-                            transform="rotate(-20 26 18)"
-                          />
-
-                          <!-- Inner White Ring -->
-                          <circle
-                            cx="32"
-                            cy="23"
-                            r="10"
-                            fill="#ffffff"
-                            opacity="0.98"
-                          />
-
-                          <!-- Core Status Dot -->
-                          <circle
-                            cx="32"
-                            cy="23"
-                            r="5"
-                            fill="${markerColor}"
-                          />
-
-                        </svg>
                       </div>
-
-                      <style>
-                        @keyframes pulseMarker {
-                          0% {
-                            transform: scale(0.9);
-                            opacity: 0.35;
-                          }
-                          70% {
-                            transform: scale(1.8);
-                            opacity: 0;
-                          }
-                          100% {
-                            transform: scale(0.9);
-                            opacity: 0;
-                          }
-                        }
-                      </style>
                     `,
-                    className: "custom-premium-pin",
-                    iconSize: [52, 52],
-                    iconAnchor: [26, 52],
-                    popupAnchor: [0, -45],
+                    className: "adts-clinical-pin",
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12],
+                    popupAnchor: [0, -12],
                   });
 
                   return (
@@ -601,147 +460,105 @@ export default function AnimalMovement() {
                       position={coords}
                       icon={customIcon}
                     >
-                      <MapTooltip sticky opacity={0.96}>
-                        <div
-                          style={{
-                            fontFamily: "Inter, sans-serif",
-                            padding: "10px",
-                            minWidth: "170px",
-                          }}
-                        >
-                          <strong
-                            style={{
-                              textTransform: "uppercase",
-                              borderBottom: "1px solid #e5e7eb",
-                              display: "block",
-                              paddingBottom: "6px",
-                              marginBottom: "6px",
-                              fontSize: "13px",
-                              letterSpacing: "0.5px",
-                            }}
-                          >
-                            Brgy {brgyName}
+                      <MapTooltip sticky opacity={1}>
+                        <div style={{ fontFamily: "monospace", padding: "8px", minWidth: "160px", background: "#1a1f24", color: "#f7f9ff", border: "1px solid #727d81" }}>
+                          <strong style={{ display: "block", borderBottom: "1px solid #434c50", paddingBottom: "4px", marginBottom: "4px", fontSize: "12px", textTransform: "uppercase" }}>
+                            {brgyName}
                           </strong>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "3px" }}>
-                            <span style={{ color: "#64748b", fontWeight: 700 }}>HEALTHY</span>
-                            <span style={{ fontWeight: 900, color: "#059669" }}>
-                              {currentStats.healthy.toLocaleString()}
-                            </span>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", marginBottom: "2px" }}>
+                            <span style={{ color: "#bec8cb" }}>HEALTHY</span>
+                            <span style={{ color: "#146c2e", fontWeight: "bold" }}>{currentStats.healthy}</span>
                           </div>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "3px" }}>
-                            <span style={{ color: "#64748b", fontWeight: 700 }}>MILD</span>
-                            <span style={{ fontWeight: 900, color: "#f97316" }}>
-                              {currentStats.mild.toLocaleString()}
-                            </span>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", marginBottom: "2px" }}>
+                            <span style={{ color: "#bec8cb" }}>MILD</span>
+                            <span style={{ color: "#f97316", fontWeight: "bold" }}>{currentStats.mild}</span>
                           </div>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "3px" }}>
-                            <span style={{ color: "#64748b", fontWeight: 700 }}>CRITICAL</span>
-                            <span style={{ fontWeight: 900, color: "#dc2626" }}>
-                              {currentStats.critical.toLocaleString()}
-                            </span>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", marginBottom: "2px" }}>
+                            <span style={{ color: "#bec8cb" }}>CRITICAL</span>
+                            <span style={{ color: "#b3261e", fontWeight: "bold" }}>{currentStats.critical}</span>
                           </div>
-
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "5px" }}>
-                            <span style={{ color: "#64748b", fontWeight: 700 }}>UNVERIFIED</span>
-                            <span style={{ fontWeight: 900, color: "#d97706" }}>
-                              {currentStats.unverified.toLocaleString()}
-                            </span>
-                          </div>
-
-                          <div
-                            style={{
-                              borderTop: "1px solid #e5e7eb",
-                              paddingTop: "6px",
-                              display: "flex",
-                              justifyContent: "space-between",
-                              fontSize: "12px",
-                              fontWeight: 900,
-                            }}
-                          >
+                          <div style={{ borderTop: "1px solid #434c50", paddingTop: "4px", display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: "bold", marginTop: "4px" }}>
                             <span>TOTAL</span>
-                            <span>{currentStats.total.toLocaleString()}</span>
+                            <span>{currentStats.total}</span>
                           </div>
                         </div>
                       </MapTooltip>
                     </Marker>
                   );
-                  
                 })}
               </MapContainer>
             </div>
           </div>
           
-          {/* Top Barangays List */}
-          <div className="bg-white rounded-[2.5rem] sm:rounded-[3rem] border border-slate-200 shadow-xl p-6 sm:p-8 lg:p-10">
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 mb-4 sm:mb-6 tracking-tight">
-              Top 5 Movement Activity Barangays
+          {/* ── TOP BARANGAYS LIST ── */}
+          <div className="bg-surface border border-outline-variant p-xl">
+            <h3 className="font-display text-headline-sm text-primary uppercase mb-md">
+              Top 5 Activity Domains
             </h3>
-            <div className="space-y-3 sm:space-y-4 max-h-[350px] sm:max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+            <div className="flex flex-col border border-outline-variant divide-y divide-outline-variant max-h-[400px] overflow-y-auto">
               {topBarangays.length > 0 ? topBarangays.map((brgy) => (
                 <div 
                   key={brgy.name}
-                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-all hover:shadow-md gap-3 sm:gap-0"
+                  className="flex justify-between items-center p-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors"
                 >
-                  <div>
-                    <p className="font-bold text-slate-900 text-base sm:text-lg">Brgy {brgy.name}</p>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                  <div className="flex flex-col">
+                    <p className="font-body text-body-lg font-bold text-on-surface uppercase">{brgy.name}</p>
+                    <div className="mt-1 flex items-center gap-2">
                       {brgy.critical > 0 ? (
-                        <span className="text-red-600 font-bold">{brgy.critical} CRITICAL CASES</span>
+                        <span className="font-mono text-[10px] bg-error-container text-error px-2 py-0.5 uppercase tracking-widest border border-error/30">{brgy.critical} CRITICAL</span>
                       ) : brgy.mild > 0 ? (
-                        <span className="text-orange-600 font-bold">{brgy.mild} mild cases</span>
-                      ) : "All healthy"}
-                    </p>
+                        <span className="font-mono text-[10px] bg-surface-container-highest text-on-surface-variant px-2 py-0.5 uppercase tracking-widest">{brgy.mild} MILD</span>
+                      ) : (
+                        <span className="font-mono text-[10px] bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 uppercase tracking-widest">CLEAN</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-left sm:text-right">
-                    <p className="text-2xl sm:text-3xl font-black text-slate-900">{brgy.total.toLocaleString()}</p>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider">Total Heads</p>
+                  <div className="text-right">
+                    <p className="font-display text-headline-md text-primary">{brgy.total.toLocaleString()}</p>
+                    <p className="font-mono text-label-caps text-on-surface-variant uppercase">HEADS</p>
                   </div>
                 </div>
               )) : (
-                <div className="p-8 sm:p-10 text-center text-slate-400 font-black uppercase text-xs">
-                  No data found for selected date range
+                <div className="p-xl text-center font-mono text-label-caps text-on-surface-variant uppercase">
+                  NO DATA FOUND
                 </div>
               )}
             </div>
           </div>
 
-          {/* Analytics Summary */}
-          <div className="mt-12 sm:mt-16 flex justify-center max-w-7xl mx-auto px-2 sm:px-0">
-            <div className="group bg-gradient-to-r from-indigo-50 via-emerald-50 to-blue-50 p-8 sm:p-10 lg:p-12 rounded-[2.5rem] sm:rounded-[3rem] border border-indigo-200/60 shadow-2xl w-full transition-all duration-500 hover:shadow-3xl hover:-translate-y-2 text-center">
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-indigo-900 mb-4 sm:mb-6 tracking-tight uppercase">
-                Movement Analytics Summary
-              </h3>
-              
-              <div className="space-y-4 sm:space-y-6 text-slate-800 leading-relaxed text-base sm:text-lg max-w-4xl mx-auto px-2 sm:px-0">
-                <p>
-                  Current tracking confirms <strong>{transactions.healthy.toLocaleString()}</strong> healthy heads and 
-                  <strong> {transactions.sick.toLocaleString()}</strong> at-risk animals in transit. 
-                  The verified data integrity ratio currently stands at <strong>{transactions.verifiedRatio}</strong>.
-                </p>
+          {/* ── ANALYTICS SUMMARY ── */}
+          <div className="bg-surface-container-lowest border border-outline-variant p-xl flex flex-col">
+            <h3 className="font-display text-headline-sm text-primary uppercase mb-md flex items-center gap-2">
+              <span className="material-symbols-outlined">analytics</span>
+              Analytics Summary
+            </h3>
+            
+            <div className="font-body text-body-md text-on-surface space-y-md">
+              <p>
+                Current tracking confirms <strong className="font-mono text-data-mono">{transactions.healthy.toLocaleString()}</strong> healthy heads and 
+                <strong className="font-mono text-data-mono"> {transactions.sick.toLocaleString()}</strong> at-risk animals in transit. 
+                The verified data integrity ratio currently stands at <strong className="font-mono text-data-mono">{transactions.verifiedRatio}</strong>.
+              </p>
 
-                {transactions.sick > 0 ? (
-                  <p className="text-red-700 font-medium bg-red-50/50 py-3 sm:py-4 rounded-2xl border border-red-100 px-4 sm:px-6">
-                    <strong>Containment Protocol:</strong> {transactions.sick} heads detected with potential pathogens. 
-                    Movements in high-risk Barangays (Red Zones) should be restricted to prevent cross-contamination.
-                  </p>
-                ) : (
-                  <p className="text-emerald-700 font-medium bg-emerald-50/50 py-3 sm:py-4 rounded-2xl border border-emerald-100 px-4 sm:px-6">
-                    <strong>Clean Transit:</strong> No critical infections detected in current movements. 
-                    Biosecurity certificates are clear for the selected period.
-                  </p>
-                )}
-
-                <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-x-8 gap-y-2 text-slate-600 font-bold uppercase text-xs sm:text-sm pt-4 border-t border-indigo-100/50">
-                  <span>Total Slaughtered: <span className="text-slate-900">{transactions.logistics.slaughtered.toLocaleString()}</span></span>
-                  <span className="hidden sm:inline text-indigo-200">•</span>
-                  <span>Total Exported: <span className="text-slate-900">{transactions.logistics.exported.toLocaleString()}</span></span>
+              {transactions.sick > 0 ? (
+                <div className="bg-error-container/20 p-md border border-error/30 flex flex-col gap-1">
+                  <strong className="font-mono text-label-caps text-error uppercase">Containment Protocol Active</strong>
+                  <span className="text-on-surface">{transactions.sick} heads detected with potential pathogens. Movements in high-risk zones should be restricted.</span>
                 </div>
+              ) : (
+                <div className="bg-tertiary-fixed/20 p-md border border-tertiary-fixed-dim flex flex-col gap-1">
+                  <strong className="font-mono text-label-caps text-tertiary uppercase">Clean Transit</strong>
+                  <span className="text-on-surface">No critical infections detected. Biosecurity certificates are clear.</span>
+                </div>
+              )}
+
+              <div className="flex gap-md border-t border-outline-variant pt-md font-mono text-label-caps text-on-surface-variant uppercase">
+                <span>Slaughtered: <strong className="text-on-surface">{transactions.logistics.slaughtered.toLocaleString()}</strong></span>
+                <span>Exported: <strong className="text-on-surface">{transactions.logistics.exported.toLocaleString()}</strong></span>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

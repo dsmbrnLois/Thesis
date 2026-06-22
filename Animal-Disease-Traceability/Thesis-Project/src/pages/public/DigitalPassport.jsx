@@ -1,25 +1,6 @@
-// src/pages/public/DigitalPassport.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import API_URL from "../../config/api";
-
-// =============================================
-// Inline styles for complete standalone rendering
-// (No TailwindCSS dependency — works even in isolation)
-// =============================================
-const COLORS = {
-  emerald50: "#ecfdf5", emerald100: "#d1fae5", emerald200: "#a7f3d0",
-  emerald500: "#10b981", emerald600: "#059669", emerald700: "#047857",
-  emerald800: "#065f46", emerald900: "#064e3b",
-  slate50: "#f8fafc", slate100: "#f1f5f9", slate200: "#e2e8f0",
-  slate300: "#cbd5e1", slate400: "#94a3b8", slate500: "#64748b",
-  slate600: "#475569", slate700: "#334155", slate800: "#1e293b",
-  slate900: "#0f172a",
-  red50: "#fef2f2", red100: "#fee2e2", red500: "#ef4444", red600: "#dc2626", red700: "#b91c1c",
-  amber50: "#fffbeb", amber100: "#fef3c7", amber500: "#f59e0b", amber600: "#d97706", amber700: "#b45309",
-  blue50: "#eff6ff", blue100: "#dbeafe", blue500: "#3b82f6", blue600: "#2563eb",
-  white: "#ffffff",
-};
 
 export default function DigitalPassport() {
   const { batchId } = useParams();
@@ -90,174 +71,140 @@ export default function DigitalPassport() {
     return path;
   }, [passportData]);
 
-  const severityStyle = (severity) => {
-    if (severity === "safe") return { bg: COLORS.emerald50, color: COLORS.emerald700, border: COLORS.emerald200, text: "✅ Verified Healthy", dot: COLORS.emerald500 };
-    if (severity === "mild") return { bg: COLORS.amber50, color: COLORS.amber700, border: COLORS.amber100, text: "⚠️ Mild Illness", dot: COLORS.amber500 };
-    if (severity === "dangerous") return { bg: COLORS.red50, color: COLORS.red700, border: COLORS.red100, text: "⛔ Dangerous Disease", dot: COLORS.red500 };
-    return { bg: COLORS.slate50, color: COLORS.slate600, border: COLORS.slate200, text: "⏳ Pending Verification", dot: COLORS.slate400 };
+  const severityTheme = (severity) => {
+    if (severity === "safe") return "bg-tertiary-fixed/20 border-tertiary-fixed-dim text-tertiary";
+    if (severity === "mild") return "bg-surface-container-high border-outline-variant text-on-surface-variant";
+    if (severity === "dangerous") return "bg-error-container/20 border-error/30 text-error";
+    return "bg-surface-container-low border-outline-variant text-on-surface-variant";
   };
 
-  // =============================================
-  // LOADING STATE
-  // =============================================
+  const severityText = (severity) => {
+    if (severity === "safe") return "VERIFIED HEALTHY";
+    if (severity === "mild") return "MILD ILLNESS";
+    if (severity === "dangerous") return "DANGEROUS DISEASE";
+    return "PENDING VERIFICATION";
+  };
+
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
-        <style>{printStyles}</style>
-        <style>{fontImport}</style>
-        <div style={styles.spinner}></div>
-        <p style={{ color: COLORS.slate400, fontFamily: "'Inter', sans-serif", fontWeight: 600, marginTop: 16 }}>
+      <div className="min-h-screen bg-surface-container-lowest flex flex-col justify-center items-center">
+        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+        <p className="font-mono text-label-caps text-primary uppercase tracking-widest animate-pulse">
           Loading Digital Passport...
-        </p>
-        <p style={{ color: COLORS.slate300, fontFamily: "'Inter', sans-serif", fontSize: 12, marginTop: 4 }}>
-          Querying blockchain ledger
         </p>
       </div>
     );
   }
 
-  // =============================================
-  // ERROR STATE
-  // =============================================
   if (error || !passportData) {
     return (
-      <div style={styles.loadingContainer}>
-        <style>{printStyles}</style>
-        <style>{fontImport}</style>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
-        <h2 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, color: COLORS.slate800, marginBottom: 8 }}>
-          Passport Not Found
-        </h2>
-        <p style={{ fontFamily: "'Inter', sans-serif", color: COLORS.slate500, fontSize: 14, maxWidth: 360, textAlign: "center", lineHeight: 1.6 }}>
+      <div className="min-h-screen bg-surface-container-lowest flex flex-col justify-center items-center p-xl">
+        <span className="material-symbols-outlined text-[48px] text-error mb-4">error</span>
+        <h2 className="font-display text-headline-lg text-primary uppercase mb-2">Passport Not Found</h2>
+        <p className="font-body text-body-lg text-on-surface-variant text-center max-w-md">
           {error || "Unable to retrieve the Digital Animal Passport for this asset."}
         </p>
-        <p style={{ fontFamily: "'Inter', sans-serif", color: COLORS.slate400, fontSize: 12, marginTop: 12, fontStyle: "italic" }}>
-          Batch ID: {batchId}
-        </p>
+        <p className="font-mono text-data-mono text-on-surface mt-4 uppercase">Batch ID: {batchId}</p>
       </div>
     );
   }
 
   const { animal, healthRecords, auditTrail, meta } = passportData;
-  const sv = severityStyle(animal.severity);
 
-  // =============================================
-  // MAIN PASSPORT RENDER
-  // =============================================
   return (
-    <div style={styles.page}>
-      <style>{printStyles}</style>
-      <style>{fontImport}</style>
-      <style>{spinnerKeyframes}</style>
-
-      <div style={styles.container}>
-        {/* ============================================= */}
-        {/* HEADER — Official Document Seal               */}
-        {/* ============================================= */}
-        <div style={styles.header}>
-          <div style={styles.headerBadge}>
+    <div className="min-h-screen bg-surface-container-lowest py-xl px-md font-sans">
+      <div className="max-w-3xl mx-auto flex flex-col shadow-[0_4px_12px_rgba(28,43,58,0.1)] border border-outline-variant bg-surface">
+        
+        {/* === HEADER === */}
+        <div className="bg-surface border-b border-outline-variant p-xl text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+          <div className="inline-block bg-surface-container-highest px-md py-xs font-mono text-[10px] text-on-surface-variant uppercase tracking-widest border border-outline-variant mb-md">
             OFFICIAL DOCUMENT
           </div>
-          <h1 style={styles.headerTitle}>
+          <h1 className="font-display text-display-sm text-primary uppercase tracking-tight">
             Digital Animal Passport
           </h1>
-          <p style={styles.headerSubtitle}>
+          <p className="font-mono text-label-caps text-on-surface-variant uppercase mt-2">
             ADTS Regional Hub — Livestock Traceability System
           </p>
-          <div style={styles.headerBatchId}>
+          <div className="mt-md inline-block bg-surface-container-lowest border border-outline-variant px-lg py-xs font-mono text-data-mono text-primary font-bold">
             {animal.batchId}
           </div>
         </div>
 
-        {/* ============================================= */}
-        {/* ANIMAL IDENTITY CARD                          */}
-        {/* ============================================= */}
-        <div style={styles.sectionCard}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-            <div style={styles.animalEmoji}>
+        {/* === ANIMAL IDENTITY CARD === */}
+        <div className="p-xl border-b border-outline-variant bg-surface">
+          <div className="flex items-center gap-lg mb-lg">
+            <div className="w-16 h-16 bg-surface-container-low border border-outline-variant flex items-center justify-center text-3xl">
               {speciesEmoji(animal.species)}
             </div>
             <div>
-              <h2 style={{ fontFamily: "'Inter', sans-serif", fontSize: 24, fontWeight: 900, color: COLORS.slate900, margin: 0 }}>
+              <h2 className="font-body text-headline-md font-bold text-on-surface uppercase">
                 {animal.species}
               </h2>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: COLORS.slate500, fontWeight: 600, margin: 0, marginTop: 2 }}>
-                {animal.quantity} head(s) registered
+              <p className="font-mono text-label-caps text-on-surface-variant uppercase mt-1">
+                {animal.quantity} HEAD(S) REGISTERED
               </p>
             </div>
           </div>
 
-          {/* Health Status Badge */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            backgroundColor: sv.bg, border: `2px solid ${sv.border}`,
-            padding: "10px 16px", borderRadius: 12, marginBottom: 20,
-          }}>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: sv.dot, flexShrink: 0 }}></div>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 800, color: sv.color }}>
-              {sv.text}
+          <div className={`flex items-center gap-2 border px-md py-sm mb-lg ${severityTheme(animal.severity)}`}>
+            <span className="material-symbols-outlined text-[16px]">
+              {animal.severity === 'safe' ? 'check_circle' : animal.severity === 'dangerous' ? 'warning' : 'pending'}
+            </span>
+            <span className="font-mono text-label-caps uppercase font-bold tracking-widest">
+              {severityText(animal.severity)}
             </span>
             {animal.diagnosedDisease && animal.severity !== "safe" && animal.severity !== "Ongoing" && (
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 700, color: COLORS.red600, marginLeft: 8 }}>
+              <span className="font-mono text-label-caps uppercase font-bold ml-2">
                 — {animal.diagnosedDisease}
               </span>
             )}
           </div>
 
-          {/* Detail Grid */}
-          <div style={styles.detailGrid}>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Owner</span>
-              <span style={styles.detailValue}>{animal.fullName}</span>
+          <div className="grid grid-cols-2 gap-md border border-outline-variant bg-surface-container-lowest divide-x divide-y divide-outline-variant">
+            <div className="p-md flex flex-col col-span-2 sm:col-span-1">
+              <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">OWNER</span>
+              <span className="font-body text-body-lg font-bold text-on-surface uppercase">{animal.fullName}</span>
             </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Location</span>
-              <span style={styles.detailValue}>{animal.location}</span>
+            <div className="p-md flex flex-col col-span-2 sm:col-span-1">
+              <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">LOCATION</span>
+              <span className="font-body text-body-lg font-bold text-on-surface uppercase">{animal.location}</span>
             </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Registered</span>
-              <span style={styles.detailValue}>{formatDate(animal.timestamp)}</span>
+            <div className="p-md flex flex-col col-span-2 sm:col-span-1">
+              <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">REGISTERED</span>
+              <span className="font-mono text-data-mono text-on-surface font-bold">{formatDate(animal.timestamp)}</span>
             </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Status</span>
-              <span style={styles.detailValue}>{animal.status}</span>
+            <div className="p-md flex flex-col col-span-2 sm:col-span-1">
+              <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">STATUS</span>
+              <span className="font-mono text-label-caps text-on-surface font-bold uppercase">{animal.status}</span>
             </div>
           </div>
 
           {animal.parentBatchId && animal.parentBatchId !== "NONE" && (
-            <div style={{
-              display: "flex", alignItems: "center", gap: 8, marginTop: 16,
-              backgroundColor: COLORS.amber50, border: `1px solid ${COLORS.amber100}`,
-              padding: "8px 14px", borderRadius: 10, fontSize: 11,
-              fontFamily: "'Inter', sans-serif", fontWeight: 700, color: COLORS.amber700,
-            }}>
-              🔗 Split from parent batch: <span style={{ fontFamily: "'Courier New', monospace" }}>{animal.parentBatchId}</span>
+            <div className="mt-md bg-surface-container-high border border-outline-variant p-sm flex items-center gap-2 font-mono text-[10px] uppercase text-on-surface-variant">
+              <span className="material-symbols-outlined text-[14px]">link</span>
+              SPLIT FROM PARENT BATCH: <span className="text-primary font-bold">{animal.parentBatchId}</span>
             </div>
           )}
         </div>
 
-        {/* ============================================= */}
-        {/* CHAIN OF CUSTODY                              */}
-        {/* ============================================= */}
+        {/* === CHAIN OF CUSTODY === */}
         {movementPath.length > 1 && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionTitle}>
-              <span style={{ marginRight: 8 }}>🗺️</span>Chain of Custody
+          <div className="p-xl border-b border-outline-variant bg-surface-container-lowest">
+            <h3 className="font-display text-headline-sm text-primary uppercase mb-md flex items-center gap-2">
+              <span className="material-symbols-outlined">map</span>
+              Chain of Custody
             </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
+            <div className="flex flex-wrap items-center gap-sm">
               {movementPath.map((loc, idx) => (
                 <React.Fragment key={idx}>
-                  <div style={{
-                    backgroundColor: idx === 0 ? COLORS.emerald50 : COLORS.slate50,
-                    border: `1px solid ${idx === 0 ? COLORS.emerald200 : COLORS.slate200}`,
-                    color: idx === 0 ? COLORS.emerald700 : COLORS.slate700,
-                    padding: "6px 12px", borderRadius: 8,
-                    fontSize: 11, fontWeight: 700, fontFamily: "'Inter', sans-serif",
-                  }}>
-                    {idx === 0 ? "📍 " : ""}{loc}
+                  <div className={`border px-md py-xs font-mono text-label-caps uppercase ${idx === 0 ? 'bg-tertiary-fixed/20 border-tertiary-fixed-dim text-tertiary font-bold' : 'bg-surface border-outline-variant text-on-surface-variant'}`}>
+                    {idx === 0 && <span className="material-symbols-outlined text-[12px] mr-1 inline-block align-text-bottom">location_on</span>}
+                    {loc}
                   </div>
                   {idx < movementPath.length - 1 && (
-                    <span style={{ color: COLORS.slate300, fontWeight: 900, fontSize: 14 }}>→</span>
+                    <span className="material-symbols-outlined text-outline">arrow_right_alt</span>
                   )}
                 </React.Fragment>
               ))}
@@ -265,254 +212,145 @@ export default function DigitalPassport() {
           </div>
         )}
 
-        {/* ============================================= */}
-        {/* MEDICAL RECORDS                               */}
-        {/* ============================================= */}
-        <div style={styles.sectionCard}>
-          <h3 style={styles.sectionTitle}>
-            <span style={{ marginRight: 8 }}>🩺</span>Medical Records
-            <span style={{
-              marginLeft: 8, backgroundColor: COLORS.blue50,
-              color: COLORS.blue600, fontSize: 11, fontWeight: 800,
-              padding: "2px 10px", borderRadius: 20,
-            }}>
+        {/* === MEDICAL RECORDS === */}
+        <div className="p-xl border-b border-outline-variant bg-surface">
+          <h3 className="font-display text-headline-sm text-primary uppercase mb-md flex items-center gap-2">
+            <span className="material-symbols-outlined">clinical_notes</span>
+            Medical Records
+            <span className="bg-primary/10 text-primary px-2 py-0.5 font-mono text-[10px] ml-2">
               {healthRecords.length}
             </span>
           </h3>
 
           {healthRecords.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <div style={{ fontSize: 36, opacity: 0.3, marginBottom: 8 }}>📋</div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, color: COLORS.slate400, fontSize: 13 }}>
-                No medical records found for this asset.
+            <div className="text-center py-xl border border-outline-variant border-dashed bg-surface-container-lowest">
+              <span className="material-symbols-outlined text-[32px] text-outline mb-2">folder_open</span>
+              <p className="font-mono text-label-caps text-on-surface-variant uppercase">
+                No medical records found
               </p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {healthRecords.map((log, i) => {
-                const typeBadgeColor = log.isInherited
-                  ? { bg: COLORS.slate100, color: COLORS.slate500, border: COLORS.slate200 }
-                  : { bg: COLORS.blue50, color: COLORS.blue600, border: COLORS.blue100 };
-
-                return (
-                  <div key={i} style={{
-                    backgroundColor: log.isInherited ? COLORS.slate50 : COLORS.white,
-                    border: `1px solid ${log.isInherited ? COLORS.slate200 : COLORS.slate200}`,
-                    borderRadius: 14, padding: 16,
-                    opacity: log.isInherited ? 0.85 : 1,
-                  }}>
-                    {/* Row 1: Date + Type */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 6 }}>
-                      <span style={{
-                        fontFamily: "'Inter', sans-serif", fontSize: 12,
-                        fontWeight: 700, color: log.isInherited ? COLORS.slate500 : COLORS.slate700,
-                      }}>
-                        {formatDate(log.date)}
+            <div className="flex flex-col gap-md">
+              {healthRecords.map((log, i) => (
+                <div key={i} className={`border p-md ${log.isInherited ? 'bg-surface-container-lowest border-outline-variant/50' : 'bg-surface border-outline-variant'}`}>
+                  <div className="flex justify-between items-start mb-sm gap-4">
+                    <span className="font-mono text-data-mono text-on-surface font-bold">
+                      {formatDate(log.date)}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[9px] uppercase tracking-widest bg-surface-container-highest px-2 py-0.5 text-on-surface-variant border border-outline-variant">
+                        {log.type}
                       </span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{
-                          fontSize: 9, fontWeight: 800, textTransform: "uppercase",
-                          letterSpacing: "0.08em", padding: "3px 10px", borderRadius: 6,
-                          fontFamily: "'Inter', sans-serif",
-                          backgroundColor: typeBadgeColor.bg, color: typeBadgeColor.color,
-                          border: `1px solid ${typeBadgeColor.border}`,
-                        }}>
-                          {log.type}
+                      {log.isInherited && (
+                        <span className="font-mono text-[9px] uppercase tracking-widest bg-outline/20 px-2 py-0.5 text-on-surface border border-outline-variant">
+                          INHERITED
                         </span>
-                        {log.isInherited && (
-                          <span style={{
-                            fontSize: 8, fontWeight: 900, textTransform: "uppercase",
-                            letterSpacing: "0.1em", padding: "2px 8px", borderRadius: 20,
-                            fontFamily: "'Inter', sans-serif",
-                            backgroundColor: COLORS.slate200, color: COLORS.slate500,
-                          }}>
-                            Inherited
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
-                    {/* Row 2: Name */}
-                    <p style={{
-                      fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 800,
-                      color: log.isInherited ? COLORS.slate600 : COLORS.slate800,
-                      margin: 0, marginBottom: 4,
-                    }}>
-                      {log.name}
-                    </p>
-                    {/* Row 3: Notes */}
-                    {log.notes && (
-                      <p style={{
-                        fontFamily: "'Inter', sans-serif", fontSize: 12, color: COLORS.slate500,
-                        fontStyle: "italic", margin: 0, marginBottom: 6, lineHeight: 1.5,
-                      }}>
-                        "{log.notes}"
-                      </p>
-                    )}
-                    {/* Row 4: Vet + Validity */}
-                    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: COLORS.slate400, fontWeight: 600 }}>
-                        Vet: {log.vetUsername}
-                      </span>
-                      <span style={{
-                        fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 700,
-                        padding: "2px 8px", borderRadius: 4,
-                        backgroundColor: log.status === "Valid" ? COLORS.emerald50 : COLORS.red50,
-                        color: log.status === "Valid" ? COLORS.emerald700 : COLORS.red700,
-                      }}>
-                        {log.status}
-                      </span>
-                    </div>
-                    {/* Next Due */}
-                    {log.nextDueDate && (
-                      <div style={{
-                        marginTop: 8, fontSize: 11, fontWeight: 600,
-                        color: COLORS.amber700, fontFamily: "'Inter', sans-serif",
-                        backgroundColor: COLORS.amber50, padding: "4px 10px",
-                        borderRadius: 6, display: "inline-block",
-                      }}>
-                        Next due: {formatDate(log.nextDueDate)}
-                      </div>
-                    )}
                   </div>
-                );
-              })}
+                  
+                  <p className="font-body text-body-lg font-bold text-on-surface uppercase mb-1">
+                    {log.name}
+                  </p>
+                  
+                  {log.notes && (
+                    <p className="font-body text-body-md text-on-surface-variant mb-sm italic">
+                      "{log.notes}"
+                    </p>
+                  )}
+                  
+                  <div className="flex justify-between items-center mt-md pt-sm border-t border-outline-variant">
+                    <span className="font-mono text-label-caps text-on-surface-variant uppercase">
+                      VET: {log.vetUsername}
+                    </span>
+                    <span className={`font-mono text-[9px] uppercase px-2 py-0.5 border ${log.status === "Valid" ? 'bg-tertiary-fixed/20 border-tertiary-fixed-dim text-tertiary' : 'bg-error-container/20 border-error/30 text-error'}`}>
+                      {log.status}
+                    </span>
+                  </div>
+
+                  {log.nextDueDate && (
+                    <div className="mt-sm font-mono text-[10px] bg-surface-container-high px-2 py-1 uppercase text-on-surface-variant border border-outline-variant inline-block">
+                      NEXT DUE: {formatDate(log.nextDueDate)}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* ============================================= */}
-        {/* BLOCKCHAIN AUDIT TRAIL                        */}
-        {/* ============================================= */}
-        <div style={styles.sectionCard}>
-          <h3 style={styles.sectionTitle}>
-            <span style={{ marginRight: 8 }}>⛓️</span>Blockchain Audit Trail
-            <span style={{
-              marginLeft: 8, backgroundColor: COLORS.emerald50,
-              color: COLORS.emerald600, fontSize: 11, fontWeight: 800,
-              padding: "2px 10px", borderRadius: 20,
-            }}>
+        {/* === BLOCKCHAIN AUDIT TRAIL === */}
+        <div className="p-xl border-b border-outline-variant bg-surface-container-lowest">
+          <h3 className="font-display text-headline-sm text-primary uppercase mb-md flex items-center gap-2">
+            <span className="material-symbols-outlined">link</span>
+            Blockchain Audit Trail
+            <span className="bg-primary/10 text-primary px-2 py-0.5 font-mono text-[10px] ml-2">
               {sortedAudit.length}
             </span>
           </h3>
 
           {sortedAudit.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <div style={{ fontSize: 36, opacity: 0.3, marginBottom: 8 }}>🔗</div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, color: COLORS.slate400, fontSize: 13 }}>
-                Blockchain data unavailable. The network may be offline.
+            <div className="text-center py-xl border border-outline-variant border-dashed bg-surface">
+              <span className="material-symbols-outlined text-[32px] text-outline mb-2">cloud_off</span>
+              <p className="font-mono text-label-caps text-on-surface-variant uppercase">
+                Blockchain data unavailable.
               </p>
             </div>
           ) : (
-            <div style={{ position: "relative", paddingLeft: 24 }}>
-              {/* Vertical Line */}
-              <div style={{
-                position: "absolute", left: 7, top: 8, bottom: 8,
-                width: 2, backgroundColor: COLORS.slate200,
-              }}></div>
-
+            <div className="relative pl-6">
+              <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-outline-variant"></div>
+              
               {sortedAudit.map((item, i) => {
                 const isFirstInherited = item.isInherited && i > 0 && !sortedAudit[i - 1].isInherited;
 
                 return (
                   <React.Fragment key={i}>
                     {isFirstInherited && (
-                      <div style={{
-                        position: "relative", marginBottom: 16, marginTop: 8,
-                        backgroundColor: COLORS.amber50, border: `1px solid ${COLORS.amber100}`,
-                        padding: "8px 14px", borderRadius: 10,
-                        fontSize: 10, fontWeight: 900, textTransform: "uppercase",
-                        letterSpacing: "0.12em", color: COLORS.amber700,
-                        fontFamily: "'Inter', sans-serif",
-                      }}>
-                        🔗 Inherited History (Parent Batch)
+                      <div className="relative mb-md mt-sm bg-surface-container-high border border-outline-variant px-md py-sm font-mono text-[10px] uppercase text-on-surface-variant">
+                        🔗 INHERITED HISTORY (PARENT BATCH)
                       </div>
                     )}
-                    <div style={{ position: "relative", marginBottom: 16 }}>
-                      {/* Dot */}
-                      <div style={{
-                        position: "absolute", left: -20, top: 6,
-                        width: 14, height: 14, borderRadius: "50%",
-                        backgroundColor: item.isInherited ? COLORS.slate400 : COLORS.emerald500,
-                        border: `3px solid ${COLORS.white}`,
-                        boxShadow: `0 0 0 2px ${item.isInherited ? COLORS.slate300 : COLORS.emerald200}`,
-                        zIndex: 2,
-                      }}></div>
-
-                      <div style={{
-                        backgroundColor: item.isInherited ? COLORS.slate50 : COLORS.white,
-                        border: `1px solid ${COLORS.slate200}`,
-                        borderRadius: 14, padding: 16,
-                        opacity: item.isInherited ? 0.85 : 1,
-                      }}>
-                        {/* TX Hash + Timestamp */}
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 6 }}>
-                          <span style={{
-                            fontFamily: "'Courier New', monospace",
-                            fontSize: 10, fontWeight: 600, color: COLORS.white,
-                            backgroundColor: COLORS.slate900,
-                            padding: "3px 8px", borderRadius: 4,
-                          }}>
-                            TX: {item.txId?.substring(0, 12)}...
+                    <div className="relative mb-lg">
+                      <div className={`absolute -left-6 top-1 w-3 h-3 rounded-none rotate-45 border-2 border-surface ${item.isInherited ? 'bg-outline shadow-[0_0_0_1px_#727d81]' : 'bg-primary shadow-[0_0_0_1px_#004a77]'} z-10`}></div>
+                      
+                      <div className={`border p-md ${item.isInherited ? 'bg-surface-container-lowest border-outline-variant/50' : 'bg-surface border-outline-variant'}`}>
+                        <div className="flex flex-wrap justify-between items-center mb-sm gap-2">
+                          <span className="font-mono text-[10px] bg-on-surface text-surface px-2 py-0.5 border border-outline-variant">
+                            TX: {item.txId?.substring(0, 16)}...
                           </span>
-                          <span style={{
-                            fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600,
-                            color: item.isInherited ? COLORS.slate500 : COLORS.emerald600,
-                            backgroundColor: item.isInherited ? COLORS.slate100 : COLORS.emerald50,
-                            padding: "3px 8px", borderRadius: 4,
-                          }}>
+                          <span className={`font-mono text-data-mono font-bold ${item.isInherited ? 'text-on-surface-variant' : 'text-primary'}`}>
                             {formatDateTime(item.data.timestamp)}
                           </span>
                         </div>
 
-                        {/* Status */}
-                        <p style={{
-                          fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 900,
-                          color: item.isInherited ? COLORS.slate600 : COLORS.slate800,
-                          margin: 0, marginBottom: 10,
-                          display: "flex", alignItems: "center", gap: 8,
-                        }}>
-                          {item.data.status || "State Update"}
+                        <p className="font-body text-body-lg font-bold text-on-surface uppercase mb-md flex items-center gap-2">
+                          {item.data.status || "STATE UPDATE"}
                           {item.isInherited && (
-                            <span style={{
-                              fontSize: 8, fontWeight: 900, textTransform: "uppercase",
-                              letterSpacing: "0.1em", padding: "2px 8px", borderRadius: 20,
-                              fontFamily: "'Inter', sans-serif",
-                              backgroundColor: COLORS.slate200, color: COLORS.slate500,
-                            }}>
-                              Inherited
+                            <span className="font-mono text-[9px] uppercase tracking-widest bg-outline/20 px-2 py-0.5 text-on-surface border border-outline-variant">
+                              INHERITED
                             </span>
                           )}
                         </p>
 
-                        {/* Detail mini-grid */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 11 }}>
-                          <div style={styles.auditDetail}>
-                            <span style={styles.auditDetailLabel}>Batch</span>
-                            <span style={{ fontWeight: 700, color: COLORS.slate800, fontFamily: "'Courier New', monospace", fontSize: 10 }}>
-                              {item.data.batchId}
-                            </span>
+                        <div className="grid grid-cols-2 gap-sm border border-outline-variant bg-surface-container-lowest divide-x divide-y divide-outline-variant">
+                          <div className="p-sm flex flex-col col-span-2 sm:col-span-1">
+                            <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">BATCH ID</span>
+                            <span className="font-mono text-data-mono text-on-surface font-bold">{item.data.batchId}</span>
                           </div>
-                          <div style={styles.auditDetail}>
-                            <span style={styles.auditDetailLabel}>Qty</span>
-                            <span style={{ fontWeight: 700, color: COLORS.slate800 }}>{item.data.quantity} heads</span>
+                          <div className="p-sm flex flex-col col-span-2 sm:col-span-1">
+                            <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">QTY</span>
+                            <span className="font-body text-body-sm font-bold text-on-surface uppercase">{item.data.quantity} HEADS</span>
                           </div>
-                          <div style={{ ...styles.auditDetail, gridColumn: "1 / -1" }}>
-                            <span style={styles.auditDetailLabel}>Location</span>
-                            <span style={{ fontWeight: 600, color: COLORS.slate700, fontSize: 11 }}>{item.data.location}</span>
+                          <div className="p-sm flex flex-col col-span-2">
+                            <span className="font-mono text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">LOCATION</span>
+                            <span className="font-body text-body-sm font-bold text-on-surface uppercase">{item.data.location}</span>
                           </div>
                         </div>
 
-                        {/* Diagnosis Alert */}
                         {item.data.diagnosedDisease && item.data.severity !== "safe" && item.data.severity !== "Ongoing" && (
-                          <div style={{
-                            marginTop: 10, display: "flex", alignItems: "center", gap: 8,
-                            backgroundColor: COLORS.red50, border: `1px solid ${COLORS.red100}`,
-                            padding: "6px 12px", borderRadius: 8,
-                          }}>
-                            <div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: COLORS.red500 }}></div>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 800, color: COLORS.red600 }}>
-                              DIAGNOSIS: {item.data.diagnosedDisease}
-                            </span>
+                          <div className="mt-sm bg-error-container/20 border border-error/30 p-sm flex items-center gap-2 font-mono text-[10px] text-error uppercase">
+                            <span className="w-2 h-2 bg-error"></span>
+                            DIAGNOSIS: <span className="font-bold">{item.data.diagnosedDisease}</span>
                           </div>
                         )}
                       </div>
@@ -524,208 +362,29 @@ export default function DigitalPassport() {
           )}
         </div>
 
-        {/* ============================================= */}
-        {/* VERIFICATION FOOTER                           */}
-        {/* ============================================= */}
-        <div style={styles.footer}>
-          <div style={styles.footerSeal}>
-            <span style={{ fontSize: 20, marginBottom: 8, display: "block" }}>🛡️</span>
-            <p style={{ fontWeight: 900, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: COLORS.emerald700, marginBottom: 6 }}>
-              Blockchain Verified Document
+        {/* === FOOTER === */}
+        <div className="bg-surface p-xl text-center">
+          <div className="border border-outline-variant bg-surface-container-lowest p-lg mb-md">
+            <span className="material-symbols-outlined text-[24px] text-primary mb-2">shield</span>
+            <p className="font-mono text-label-caps text-primary uppercase tracking-widest mb-2 font-bold">
+              Blockchain Verified
             </p>
-            <p style={{ fontSize: 11, color: COLORS.slate500, lineHeight: 1.6, maxWidth: 420, margin: "0 auto" }}>
-              This Digital Animal Passport is powered by <strong>Hyperledger Fabric</strong> blockchain technology.
-              All records are cryptographically immutable and tamper-proof.
+            <p className="font-body text-body-sm text-on-surface-variant">
+              Powered by <strong className="text-on-surface">Hyperledger Fabric</strong>. All records are cryptographically immutable and tamper-proof.
             </p>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: COLORS.slate400, fontWeight: 600 }}>
-              Channel: {meta?.channel} • Chaincode: {meta?.chaincode}
-            </span>
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: COLORS.slate400, fontWeight: 600 }}>
-              Generated: {formatDateTime(meta?.generatedAt)}
-            </span>
+          
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 font-mono text-[10px] text-on-surface-variant uppercase">
+            <span>CH: {meta?.channel} • CC: {meta?.chaincode}</span>
+            <span>SYNC: {formatDateTime(meta?.generatedAt)}</span>
           </div>
-          <p style={{
-            fontFamily: "'Inter', sans-serif", fontSize: 9, color: COLORS.slate400,
-            textAlign: "center", marginTop: 16, fontWeight: 600,
-            textTransform: "uppercase", letterSpacing: "0.1em",
-          }}>
+          
+          <p className="font-mono text-[9px] text-outline uppercase tracking-widest mt-md">
             {meta?.source}
           </p>
         </div>
+
       </div>
     </div>
   );
 }
-
-// =============================================
-// STYLES OBJECT
-// =============================================
-const styles = {
-  page: {
-    minHeight: "100vh",
-    backgroundColor: COLORS.slate100,
-    padding: "20px 12px",
-    fontFamily: "'Inter', sans-serif",
-  },
-  container: {
-    maxWidth: 640,
-    margin: "0 auto",
-  },
-  loadingContainer: {
-    display: "flex", flexDirection: "column",
-    justifyContent: "center", alignItems: "center",
-    minHeight: "100vh", backgroundColor: COLORS.slate50,
-  },
-  spinner: {
-    width: 40, height: 40,
-    border: `4px solid ${COLORS.emerald200}`,
-    borderTopColor: COLORS.emerald600,
-    borderRadius: "50%",
-    animation: "passport-spin 0.8s linear infinite",
-  },
-
-  // Header
-  header: {
-    background: `linear-gradient(135deg, ${COLORS.emerald900} 0%, ${COLORS.slate900} 100%)`,
-    borderRadius: "24px 24px 0 0",
-    padding: "32px 24px 28px",
-    textAlign: "center",
-    color: COLORS.white,
-  },
-  headerBadge: {
-    display: "inline-block",
-    fontSize: 9, fontWeight: 900,
-    textTransform: "uppercase", letterSpacing: "0.2em",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    padding: "4px 16px", borderRadius: 20,
-    marginBottom: 12,
-  },
-  headerTitle: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 22, fontWeight: 900,
-    margin: "0 0 6px 0",
-    letterSpacing: "-0.02em",
-  },
-  headerSubtitle: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 11, fontWeight: 500,
-    opacity: 0.7, margin: "0 0 16px 0",
-  },
-  headerBatchId: {
-    fontFamily: "'Courier New', monospace",
-    fontSize: 13, fontWeight: 700,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    border: "1px solid rgba(255,255,255,0.2)",
-    display: "inline-block",
-    padding: "6px 20px", borderRadius: 10,
-  },
-
-  // Section Card
-  sectionCard: {
-    backgroundColor: COLORS.white,
-    borderLeft: `1px solid ${COLORS.slate200}`,
-    borderRight: `1px solid ${COLORS.slate200}`,
-    borderBottom: `1px solid ${COLORS.slate200}`,
-    padding: "24px 24px",
-    pageBreakInside: "avoid",
-  },
-  sectionTitle: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 14, fontWeight: 900,
-    color: COLORS.slate800,
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-    marginBottom: 16,
-    display: "flex", alignItems: "center",
-    margin: "0 0 16px 0",
-  },
-
-  // Animal Emoji
-  animalEmoji: {
-    width: 56, height: 56,
-    backgroundColor: COLORS.emerald50,
-    border: `2px solid ${COLORS.emerald200}`,
-    borderRadius: 16,
-    display: "flex", alignItems: "center", justifyContent: "center",
-    fontSize: 28, flexShrink: 0,
-  },
-
-  // Detail Grid
-  detailGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 10,
-  },
-  detailItem: {
-    backgroundColor: COLORS.slate50,
-    border: `1px solid ${COLORS.slate200}`,
-    borderRadius: 10,
-    padding: "10px 14px",
-    display: "flex", flexDirection: "column",
-  },
-  detailLabel: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 9, fontWeight: 900,
-    textTransform: "uppercase", letterSpacing: "0.1em",
-    color: COLORS.slate400, marginBottom: 4,
-  },
-  detailValue: {
-    fontFamily: "'Inter', sans-serif",
-    fontSize: 13, fontWeight: 700,
-    color: COLORS.slate800,
-  },
-
-  // Audit Detail
-  auditDetail: {
-    backgroundColor: COLORS.slate50,
-    border: `1px solid ${COLORS.slate100}`,
-    borderRadius: 6,
-    padding: "6px 10px",
-    display: "flex", flexDirection: "column",
-    fontFamily: "'Inter', sans-serif",
-  },
-  auditDetailLabel: {
-    fontSize: 8, fontWeight: 900,
-    textTransform: "uppercase", letterSpacing: "0.1em",
-    color: COLORS.slate400, marginBottom: 2,
-  },
-
-  // Footer
-  footer: {
-    backgroundColor: COLORS.white,
-    borderLeft: `1px solid ${COLORS.slate200}`,
-    borderRight: `1px solid ${COLORS.slate200}`,
-    borderBottom: `1px solid ${COLORS.slate200}`,
-    borderRadius: "0 0 24px 24px",
-    padding: "24px 24px 20px",
-  },
-  footerSeal: {
-    textAlign: "center",
-    padding: "20px",
-    backgroundColor: COLORS.emerald50,
-    border: `1px solid ${COLORS.emerald200}`,
-    borderRadius: 16,
-  },
-};
-
-// =============================================
-// PRINT STYLES
-// =============================================
-const printStyles = `
-  @media print {
-    body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    * { box-shadow: none !important; }
-  }
-`;
-
-const fontImport = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-`;
-
-const spinnerKeyframes = `
-  @keyframes passport-spin {
-    to { transform: rotate(360deg); }
-  }
-`;
